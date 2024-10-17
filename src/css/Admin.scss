@@ -1,0 +1,89 @@
+.admin-container,
+.account-container {
+    max-width: 1170px;
+    margin: 25px auto;
+    display: flex;
+    border-radius: 5px;
+
+    .admin-navbar,
+    .account-navbar {
+        flex: 1;
+        padding: 20px;
+        min-width: 200px;
+        border-radius: 5px;
+
+        .admin-navbar-content,
+        .account-navbar-content {
+            border: 1px solid #1DC483;
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+
+            .nav {
+                color: black;
+                padding: 10px 15px;
+                text-decoration: none;
+                transition: background-color 0.3s;
+            }
+
+            .nav:hover {
+                background-color: #21e69a;
+            }
+
+            .nav.active {
+                background-color: #1DC483;
+            }
+
+            .nav-top {
+                border-top-left-radius: 10px;
+                border-top-right-radius: 10px;
+            }
+
+            .nav-bot {
+                border-bottom-left-radius: 10px;
+                border-bottom-right-radius: 10px;
+            }
+        }
+    }
+
+    .admin-content {
+        flex: 5;
+        padding: 20px;
+
+        input[type="text"] {
+            width: 100%;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        button {
+            padding: 10px 20px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #13a06a;
+        }
+
+        .content-container {
+            margin: 0 0 40px 13%;
+            width: 80%;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            background-color: #fff;
+
+            .product-list {
+                margin-top: 20px;
+            }
+
+        }
+
+        .content-container h1 {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 2em;
+            color: #333;
+        }
+    }
+}

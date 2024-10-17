@@ -1,0 +1,63 @@
+.profile-update-container {
+  max-width: 500px;
+  margin: 0 auto;
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+
+  button {
+    width: 100%;
+    padding: 10px;
+    background-color: #1DC483;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+
+    &:hover {
+      background-color: #17a669;
+    }
+  }
+
+  h2 {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+
+  .input-group {
+    margin-bottom: 20px;
+
+    label {
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    input,
+    textarea {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+
+    input[type="file"] {
+      padding: 3px;
+    }
+
+
+  }
+
+  .avatar-preview {
+    margin-top: 10px;
+    max-width: 100px;
+    border-radius: 50%;
+  }
+
+  .error {
+    color: red;
+    margin-bottom: 20px;
+  }
+}

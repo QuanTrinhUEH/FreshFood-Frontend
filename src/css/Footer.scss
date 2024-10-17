@@ -1,0 +1,56 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@100..900&display=swap');
+
+.footer {
+    background: #262626;
+    min-height: 400px;
+    position: relative;
+}
+
+/*FOOTER MIDDLE CSS*/
+.footer-middle {
+    padding-top: 80px;
+}
+.footer-middle>.container {
+    grid-template-columns: 33% 33% 33%;
+    display: grid;
+    margin: 0 auto;
+    width: 1170px;
+    color: #888;
+}
+.footer-middle-left>form {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+.footer-middle-left>form>input {
+    border: 1px solid #434343;
+    padding: 12px 20px;
+    font-size: 14px;
+    width: 100%;
+    background-color: transparent;
+    border-radius: 20px;
+    margin-bottom: 15px;
+    color: inherit;
+}
+.footer-middle-left>form>button {
+    transition: all 0.5s cubic-bezier(0.215, 0.61, 0.355, 1);
+    font-size: 14px;
+    height: 37px;
+    width: 95px;
+    border-radius: 20px;
+    border: none;
+    background-color: #363636;
+    cursor: pointer;
+    color: inherit;
+}
+.footer-middle-middle {
+    text-align: center;
+}
+.footer-middle-right {
+    text-align: end;
+}
+.footer-middle-right-text {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}

@@ -1,0 +1,101 @@
+.loader {
+    margin: 100px auto 300px;
+}
+
+
+
+.search-container {
+    max-width: 1170px;
+    text-align: center;
+    margin: 100px auto;
+
+    .pagination {
+        margin: 0 0 70px;
+
+        nav {
+            ul {
+                width: 100%;
+                justify-content: center;
+                text-align: center;
+            }
+        }
+    }
+
+    .results {
+        display: flex;
+        justify-content: start;
+        flex-wrap: wrap;
+        gap: 4%;
+
+        a {
+            cursor: pointer;
+            width: 22%;
+            position: relative;
+            border: 1px solid #e6e6e6;
+            margin-bottom: 1rem;
+            border-radius: .5rem;
+            color: inherit;
+
+            .item {
+
+                .discount-percentage {
+                    top: 1rem;
+                    left: -2px;
+                    padding: 6px 10px;
+                    color: white;
+                    background-color: #1dc483;
+                    position: absolute;
+                    display: flex;
+                    align-items: center;
+                }
+
+                .top-img {
+                    margin-top: 2rem;
+                    width: 100%;
+                    border-bottom: 1px solid #e6e6e6;
+
+                    img {
+                        width: 100%;
+                    }
+                }
+
+                .price-tags {
+                    .name-tag {
+                        font-size: 1rem;
+                        margin-top: 4px;
+                    }
+
+                    .price-tag {
+                        margin-top: 20px;
+                    }
+
+                    .discount-tag {
+                        color: #999;
+                        font-weight: 700;
+                    }
+
+                    button {
+                        display: flex;
+                        align-items: center;
+                        width: 50%;
+                        margin: 10px auto 1rem;
+                        justify-content: center;
+                        border: 1px solid #e6e6e6;
+                        border-radius: 2rem;
+                        padding: 10px 0;
+                        color: inherit;
+                        cursor: pointer;
+                        -webkit-transition: all 0.3s ease-in-out;
+                        transition: all .15s ease-in-out;
+                        background-color: white;
+                    }
+                }
+
+                &:hover .price-tags button {
+                    color: #fff;
+                    background-color: #1dc483;
+                }
+            }
+        }
+    }
+}
