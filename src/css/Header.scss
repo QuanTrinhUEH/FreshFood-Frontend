@@ -41,8 +41,8 @@
     color: #1dc483;
 }
 
-.header-top-left-signin,
-.header-top-left-signup,
+.header-top-left-login,
+.header-top-left-register,
 .header-top-left-cart {
     display: flex;
     align-items: center;
@@ -216,7 +216,7 @@ a.active {
             text-align: left;
         }
 
-        .sigh-out {
+        .log-out {
             width: 100%;
             border: none;
             cursor: pointer;

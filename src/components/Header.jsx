@@ -4,10 +4,15 @@ import { PiSignInBold, PiMagnifyingGlassBold } from "react-icons/pi";
 import { FaUserAlt, FaFacebookMessenger } from "react-icons/fa";
 import { IoIosArrowDown, IoMdCart } from "react-icons/io";
 import '../css/Header.scss'
+import { useSelector, useDispatch } from 'react-redux';
+import { clearUser } from '../store/userSlice';
+import { clearCart } from '../store/cartSlice';
 
 const Header = () => {
   const navigate = useNavigate();
-  const [user, setUser] = useState(JSON.parse(localStorage.getItem('user')))
+  const dispatch = useDispatch();
+  const user = useSelector(state => state.user);
+  const cart = useSelector(state => state.cart);
   const [searchInput, setSearchInput] = useState('');
   const [verify, setVerify] = useState(false)
   const searchInputChange = (e) => {
@@ -24,29 +29,26 @@ const Header = () => {
       navigate(`/search?q=${searchInput}`)
     }
   }
-  const handleSignOut = () => {
-    localStorage.removeItem('user')
-    localStorage.removeItem('token')
-    localStorage.removeItem('refreshToken')
-    localStorage.removeItem('cart')
-    setUser(null)
-    navigate(0)
+  const handleLogOut = () => {
+    dispatch(clearUser());
+    dispatch(clearCart());
+    navigate('/');
   }
   return (
     <div className='header'>
       <div className="header-top">
         <div className="container">
           {
-            user == null ?
+            !user ?
               <div className="header-top-left">
-                <Link to={'/signin'}>
-                  <div className="header-top-left-signin">
+                <Link to={'/login'}>
+                  <div className="header-top-left-login">
                     <PiSignInBold />
                     <p>Đăng nhập</p>
                   </div>
                 </Link>
-                <Link to={'/signup'}>
-                  <div className="header-top-left-signup">
+                <Link to={'/register'}>
+                  <div className="header-top-left-register">
                     <FaUserAlt />
                     <p>Đăng ký</p>
                   </div>
@@ -60,12 +62,12 @@ const Header = () => {
                     </Link>
                     <div className="dropdown-content">
                       <div className="nav-profile">
-                        <img src={user.profile_picture} alt="" className="profile-img" />
-                        <p className="profile-name">{user.username}</p>
+                        <img src={user.profilePicture} alt="" className="profile-img" />
+                        <p className="profile-name">{user.userName}</p>
                       </div>
                       <Link className='nav-dropdown ' to={'/account'}>Tài khoản</Link>
                       {user.role == 'admin' ? <Link className='nav-dropdown ' to={'/admin'}>Quản lý</Link> : <Link className='nav-dropdown ' to={'/cart'}>Giỏ hàng</Link>}
-                      <button className='nav-dropdown sigh-out' onClick={handleSignOut}>Đăng xuất</button>
+                      <button className='nav-dropdown log-out' onClick={handleLogOut}>Đăng xuất</button>
                     </div>
                   </div>
                 </div>
@@ -73,7 +75,7 @@ const Header = () => {
                   <div className="header-top-left-cart">
                     <IoMdCart />
                     <p>Giỏ hàng</p>
-                    <p>{localStorage.getItem('cart') ? JSON.parse(localStorage.getItem('cart')).map(e => e.quantity).reduce((a, c) => a + c, 0) : 0}</p>
+                    <p>{cart.length ? cart.map(e => e.quantity).reduce((a, c) => a + c, 0) : 0}</p>
                   </div>
                 </Link>
               </div>

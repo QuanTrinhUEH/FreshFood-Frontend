@@ -11,8 +11,8 @@ import Item from './pages/Item.jsx'
 import NotFound from './pages/NotFound.jsx'
 import Search from './pages/Search.jsx'
 import About from './pages/About.jsx'
-import SignUp from './pages/SignUp.jsx'
-import SignIn from './pages/SignIn.jsx'
+import Register from './pages/Register.jsx'
+import Login from './pages/Login.jsx'
 import Cart from './pages/Cart.jsx'
 import Account from './pages/Account.jsx'
 import { refreshTokenResetter } from '../fetchApi.js'
@@ -58,10 +58,10 @@ function App() {
 
   return (
     <>
-      {(location.pathname === '/signin' || location.pathname === '/signup') ? <HeaderAlt /> : (location.pathname === '/checkout') ? <></> : <Header />}
+      {(location.pathname === '/login' || location.pathname === '/register') ? <HeaderAlt /> : (location.pathname === '/checkout') ? <></> : <Header />}
       <Routes>
-        <Route path='/signup' element={<SignUp />}></Route>
-        <Route path='/signin' element={<SignIn />}></Route>
+        <Route path='/login' element={<Login />}></Route>
+        <Route path='/register' element={<Register />}></Route>
         <Route path='/' element={<Home />}></Route>
         <Route path='/contact' element={<Contact />}></Route>
         <Route path='/admin/*' element={<Admin />}></Route>

@@ -15,7 +15,7 @@
 }
 
 .body-top-left {
-    --size: calc(1170px * 39 / 100);
+    --size: calc(1170px * 38 / 100);
     width: 100%;
 }
 
@@ -139,82 +139,81 @@
 
 
 .link-product-cart-2 {
-    position: relative;
-    border: 1px solid;
-    text-align: center;
-    position: relative;
-    border: 1px solid #e6e6e6;
-    overflow: hidden;
-    display: inline-block;
-    color: black;
-    max-width: 280px;
-    margin-top: 30px;
+    width: 280px;  // Cố định chiều rộng
+    height: 450px; // Cố định chiều cao, điều chỉnh theo nhu cầu
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    margin: 15px;  // Thêm margin để tạo khoảng cách giữa các item
+}
 
-    &:hover .description {
-        -webkit-transition: all 0.3s ease-in-out;
-        transition: all .15s ease-in-out;
-        background: rgba(248, 248, 248, 0.85);
-        border-bottom: 5px solid #1dc483;
+.link-product-cart-2:hover .description {
+    -webkit-transition: all 0.3s ease-in-out;
+    transition: all .15s ease-in-out;
+    background: rgba(248, 248, 248, 0.85);
+    border-bottom: 5px solid #1dc483;
+}
+
+.link-product-cart-2:hover .btn-buy {
+    -webkit-transition: all .3s ease-in-out;
+    transition: all .15s ease-in-out;
+    background-color: #1dc483 !important;
+    color: white !important;
+}
+
+.link-product-cart-2 .discount {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    z-index: 1;
+}
+
+.link-product-cart-2 img {
+    width: 100%;
+    height: 280px;
+    object-fit: contain;
+}
+
+.link-product-cart-2 .description {
+    height: 170px;  // Điều chỉnh theo nhu cầu
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 15px;
+}
+
+.link-product-cart-2 .description {
+    width: 100%;
+    transition: all 0.3s ease-in-out;
+    background: rgba(255, 255, 255, .85);
+    padding: 15px 0;
+    border-bottom: 5px solid #fff;
+
+    h2 {
+        font-size: 15px;
+        margin-bottom: 20px;
     }
 
-    &:hover .btn-buy {
+    del {
+        display: block;
+        font-size: 13px;
+        margin-bottom: 10px;
+    }
+
+    .btn-buy {
         -webkit-transition: all .3s ease-in-out;
         transition: all .15s ease-in-out;
-        background-color: #1dc483 !important;
-        color: white !important;
-    }
+        background-color: #fff;
+        border: 1px solid #e6e6e6;
+        padding: 5px 15px;
+        border-radius: 30px;
+        color: #35240d;
+        font-size: 15px;
+        display: inline-block;
+        cursor: pointer;
 
-    .discount {
-        position: absolute;
-        display: flex;
-        align-items: center;
-        gap: 5px;
-        background-color: #fb9393;
-        top: 15px;
-        padding: 8px 10px;
-        color: #fff;
-    }
-
-    img {
-        width: 100%;
-        max-width: 280px;
-        max-height: 280px;
-        object-fit: contain;
-    }
-
-    .description {
-        width: 100%;
-        transition: all 0.3s ease-in-out;
-        background: rgba(255, 255, 255, .85);
-        padding: 15px 0;
-        border-bottom: 5px solid #fff;
-
-        h2 {
-            font-size: 15px;
-            margin-bottom: 20px;
-        }
-
-        del {
-            display: block;
-            font-size: 13px;
-            margin-bottom: 10px;
-        }
-
-        .btn-buy {
-            -webkit-transition: all .3s ease-in-out;
-            transition: all .15s ease-in-out;
-            background-color: #fff;
-            border: 1px solid #e6e6e6;
-            padding: 5px 15px;
-            border-radius: 30px;
-            color: #35240d;
-            font-size: 15px;
-            display: inline-block;
-            cursor: pointer;
-
-            svg {
-                margin-right: 5px;
-            }
+        svg {
+            margin-right: 5px;
         }
     }
 }
@@ -419,9 +418,9 @@
 
 .body-middle-top-left-content-new {
     display: flex;
-    justify-content: space-between;
     flex-wrap: wrap;
-    text-align: center;
+    justify-content: center;
+    gap: 20px;  // Khoảng cách giữa các item
 }
 
 .body-middle-slider {
@@ -578,3 +577,10 @@
         }
     }
 }
+
+
+
+
+
+
+

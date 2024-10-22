@@ -5,11 +5,11 @@ import { NavLink } from 'react-router-dom'
 const NavForm = () => {
     return (
         <>
-            <div className="sign-in-nav">
-                <NavLink to={'/signin'}>Đăng nhập</NavLink>
+            <div className="login-nav">
+                <NavLink to={'/login'}>Đăng nhập</NavLink>
             </div>
-            <div className="sign-up-nav">
-                <NavLink to={'/signup'}>Đăng ký</NavLink>
+            <div className="register-nav">
+                <NavLink to={'/register'}>Đăng ký</NavLink>
             </div>
         </>
     )

@@ -26,15 +26,15 @@ const Home = () => {
   const swiperRef3 = useRef(null)
   const swiperRef4 = useRef(null)
 
-  const [fruits, setFruits] = useState([])
+  const [items, setItems] = useState([])
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        const response = await fetchAPI('/item/get-all/1', 'GET');
-        setFruits(response.data.items);
+        const response = await fetchAPI('/item/', 'GET');
+        setItems(response.data.items);
         setLoading(false);
       } catch (error) {
         console.log(error);
@@ -42,12 +42,6 @@ const Home = () => {
     };
 
     fetchData();
-    // const timeout = setTimeout(() => {
-    //   setLoading(false)
-    // }, 1000);
-    // return () => {
-    //   clearTimeout(timeout)
-    // }
   }, [])
 
 
@@ -115,10 +109,9 @@ const Home = () => {
 
   let temp = []
   for (let i = 0; i < 6; i++) {
-    temp.push(fruits[i])
+    temp.push(items[i])
   }
 
-  // console.log(loading)
   return (loading ? (<div style={{
     margin: "120px 0",
     marginLeft: "50%",
@@ -129,7 +122,7 @@ const Home = () => {
       <div className="body-top">
         <div className="container">
           <div className="body-top-left">
-            <BodyTop props={fruits[0]}></BodyTop>
+            <BodyTop props={items[0]}></BodyTop>
           </div>
           <div className="body-top-right">
             <h2 className='body-top-right-header'>SẢN PHẨM BÁN CHẠY</h2>
@@ -149,13 +142,13 @@ const Home = () => {
                   onSwiper={(swiper) => { swiperRef1.current = swiper; }}
                 >
                   <SwiperSlide>
-                    <ItemTop props={fruits[1]} />
+                    <ItemTop props={items[1]} />
                   </SwiperSlide>
                   <SwiperSlide>
-                    <ItemTop props={fruits[2]} />
+                    <ItemTop props={items[2]} />
                   </SwiperSlide>
                   <SwiperSlide>
-                    <ItemTop props={fruits[3]} />
+                    <ItemTop props={items[3]} />
                   </SwiperSlide>
                 </Swiper>
 
@@ -222,22 +215,22 @@ const Home = () => {
                         onSwiper={(swiper) => { swiperRef2.current = swiper; }}
                       >
                         <SwiperSlide>
-                          <ItemMiddle props={fruits[0]} />
+                          <ItemMiddle props={items[0]} />
                         </SwiperSlide>
                         <SwiperSlide>
-                          <ItemMiddle props={fruits[1]} />
+                          <ItemMiddle props={items[1]} />
                         </SwiperSlide>
                         <SwiperSlide>
-                          <ItemMiddle props={fruits[2]} />
+                          <ItemMiddle props={items[2]} />
                         </SwiperSlide>
                         <SwiperSlide>
-                          <ItemMiddle props={fruits[3]} />
+                          <ItemMiddle props={items[3]} />
                         </SwiperSlide>
                         <SwiperSlide>
-                          <ItemMiddle props={fruits[4]} />
+                          <ItemMiddle props={items[4]} />
                         </SwiperSlide>
                         <SwiperSlide>
-                          <ItemMiddle props={fruits[5]} />
+                          <ItemMiddle props={items[5]} />
                         </SwiperSlide>
                       </Swiper>
                       <div className="btn-controls">
@@ -306,22 +299,22 @@ const Home = () => {
                   onSwiper={(swiper) => { swiperRef3.current = swiper; }}
                 >
                   <SwiperSlide>
-                    <ItemBottom props={fruits[0]} />
+                    <ItemBottom props={items[0]} />
                   </SwiperSlide>
                   <SwiperSlide>
-                    <ItemBottom props={fruits[1]} />
+                    <ItemBottom props={items[1]} />
                   </SwiperSlide>
                   <SwiperSlide>
-                    <ItemBottom props={fruits[2]} />
+                    <ItemBottom props={items[2]} />
                   </SwiperSlide>
                   <SwiperSlide>
-                    <ItemBottom props={fruits[3]} />
+                    <ItemBottom props={items[3]} />
                   </SwiperSlide>
                   <SwiperSlide>
-                    <ItemBottom props={fruits[4]} />
+                    <ItemBottom props={items[4]} />
                   </SwiperSlide>
                   <SwiperSlide>
-                    <ItemBottom props={fruits[5]} />
+                    <ItemBottom props={items[5]} />
                   </SwiperSlide>
                 </Swiper>
                 <div className="btn-controls">
