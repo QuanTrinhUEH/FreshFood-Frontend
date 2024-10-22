@@ -194,7 +194,7 @@ const Home = () => {
 
               {/* TOP LEFT CONTENT */}
               <div className="body-middle-top-left-content">
-                <h3 style={{ fontWeight: "600", borderBottom: ".5px solid #e6e6e6", paddingBottom: ".5rem" }}>SẢN PHẨM MỚI</h3>
+                <h3 style={{ fontWeight: "600", borderBottom: ".5px solid #e6e6e6", paddingBottom: ".5rem" }}>SẢN PHẨM</h3>
                 <div className="body-middle-top-left-content-new">
                   {temp.map((e, i) => <ItemMiddle key={i} props={e} />)}
 

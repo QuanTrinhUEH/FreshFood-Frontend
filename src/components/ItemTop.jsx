@@ -6,9 +6,9 @@ const ItemTop = ({ props }) => {
     const formattedNumber = (num) => {
         return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
     }
-    
-    const discountedPrice = props.promotion 
-        ? props.price * (1 - props.promotion.discountPercentage / 100) 
+
+    const discountedPrice = props.promotion
+        ? props.price * (1 - props.promotion.discountPercentage / 100)
         : props.price;
 
     return (
@@ -16,15 +16,17 @@ const ItemTop = ({ props }) => {
             <Link to={`/product/${props._id}`} className='link-product-cart' >
                 <img src={props.images[0]} alt="" />
                 <div className="description">
-                    <h2>{props.itemName}</h2>
-                    <strong><i>Giá: </i>{formattedNumber(Math.round(discountedPrice))}đ</strong><br></br>
+                    <p className='name'>{props.itemName}</p>
+                    <strong className='price'>{formattedNumber(Math.round(discountedPrice))}đ</strong>
                     {props.promotion && (
-                        <del><i>Giá gốc: </i>{formattedNumber(props.price)}đ</del>
+                        <del><i>Giá gốc: {formattedNumber(props.price)}đ</i></del>
                     )}
-                    <button className='btn-buy'>
-                        <IoMdCart />
-                        Mua hàng
-                    </button>
+                    <div className="btn">
+                        <button className='btn-buy'>
+                            <IoMdCart />
+                            Mua hàng
+                        </button>
+                    </div>
                 </div>
             </Link>
         </>

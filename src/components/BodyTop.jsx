@@ -21,8 +21,7 @@ const BodyTop = ({ props }) => {
 
     return (
         <>
-            <Link to={`/product/${props._id}`} className='item-info' onMouseEnter={() => { setItemInfo(true) }} onMouseLeave={() => { setItemInfo(false) }} style={{background: `url(${props.images[0]})`}}>
-
+            <Link to={`/product/${props._id}`} className='item-info' onMouseEnter={() => { setItemInfo(true) }} onMouseLeave={() => { setItemInfo(false) }}><img src={props.images[0]} alt={props.itemName} />
                 <div className="info" style={!itemInfo ? {
                     visibility: "hidden",
                     opacity: "0"
@@ -34,13 +33,13 @@ const BodyTop = ({ props }) => {
                         <h2>{props.itemName}</h2>
                     </div>
                     <div className="info-prices">
-                        {props.promotion !== null ? (
+                        {props.promotion ? (
                             <>
                                 <div className="info-price">
-                                    <h1>{calculateDiscountedPrice()}đ</h1>
+                                    <strong className='price'>{formattedNumber(calculateDiscountedPrice())}đ</strong>
                                 </div>
                                 <div className="info-discount">
-                                    <del>{formattedNumber(props.price)}đ</del>
+                                    <del><i>Giá gốc: {formattedNumber(props.price)}đ</i></del>
                                 </div>
                             </>
                         ) : (

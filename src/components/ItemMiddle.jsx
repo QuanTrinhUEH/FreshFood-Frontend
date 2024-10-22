@@ -1,6 +1,6 @@
 import React from 'react'
-import { FaStar } from 'react-icons/fa'
 import { IoMdCart } from 'react-icons/io'
+import { FaStar } from 'react-icons/fa'
 import { Link } from 'react-router-dom'
 
 const ItemMiddle = ({ props }) => {
@@ -13,22 +13,30 @@ const ItemMiddle = ({ props }) => {
         : props.price;
 
     return (
-        <Link to={`/product/${props._id}`} className="product-card">
-            <img src={props.images[0]} alt={props.itemName} />
-            <div className="product-info">
-                <h3>{props.itemName}</h3>
-                <p className="price">Giá: {formattedNumber(Math.round(discountedPrice))}đ</p>
+        <>
+            <Link to={`/product/${props._id}`} className='link-product-cart-2' >
                 {props.promotion && (
-                    <p className="original-price">
-                        Giá gốc: <del>{formattedNumber(props.price)}đ</del>
-                    </p>
+                    <div className="discount">
+                        <p>-${props.promotion.discountPercentage}%</p>
+                        <FaStar />
+                    </div>
                 )}
-                <button className="buy-button">
-                    <IoMdCart />
-                    Mua hàng
-                </button>
-            </div>
-        </Link>
+                <img src={props.images[0]} alt="" />
+                <div className="description">
+                    <p className='name'>{props.itemName}</p>
+                    <strong className='price'>{formattedNumber(Math.round(discountedPrice))}đ</strong>
+                    {props.promotion && (
+                        <del><i>Giá gốc: {formattedNumber(props.price)}đ</i></del>
+                    )}
+                    <div className="btn">
+                        <button className='btn-buy'>
+                            <IoMdCart />
+                            Mua hàng
+                        </button>
+                    </div>
+                </div>
+            </Link>
+        </>
     )
 }
 
