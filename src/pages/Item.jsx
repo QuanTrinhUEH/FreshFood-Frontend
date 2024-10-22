@@ -5,7 +5,6 @@ import { LiaLongArrowAltLeftSolid, LiaLongArrowAltRightSolid } from 'react-icons
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { FaBasketShopping, FaCartShopping } from 'react-icons/fa6';
 import RecommendItem from '../components/RecommendItem';
-import Type from '../components/Type';
 import { fetchAPI } from '../../fetchApi';
 import { PuffLoader } from 'react-spinners';
 import { useDispatch, useSelector } from 'react-redux';
@@ -22,7 +21,7 @@ const Item = () => {
   const [quantity, setQuantity] = useState(1);
   const [img, setImg] = useState();
   const [itemList, setItemList] = useState([]);
-
+  const [totalPrice, setTotalPrice] = useState(0);
 
   const handleImage = (e) => {
     setImg(e.target.src)
@@ -52,24 +51,20 @@ const Item = () => {
   const formattedNumber = (num) => {
     return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
   }
-  const discountedPrice = data.promotion
+  const discountedPrice = data && data.promotion
     ? data.price * (1 - data.promotion.discountPercentage / 100)
-    : data.price;
+    : data ? data.price : 0;
 
-
+  useEffect(() => {
+    if (data) {
+      const price = data.promotion
+        ? data.price * (1 - data.promotion.discountPercentage / 100)
+        : data.price;
+      setTotalPrice(price * quantity);
+    }
+  }, [data, quantity]);
 
   // SUBMIT
-
-  const handleType = (name, type) => {
-    const index = itemList.findIndex(item => item.name === name);
-    if (index !== -1) {
-      itemList[index].type = type;
-      setItemList([...itemList]); // spread operator to trigger re-render
-    } else {
-      setItemList([])
-    }
-  };
-  const price = 10000;
 
   const handleBuy = (e) => {
     e.preventDefault();
@@ -102,28 +97,32 @@ const Item = () => {
   }
 
   // Chuyển [b] thành <b> và [/b] thành </b>, chuyển [url] => <a>, [img] => <img>
-  const convertTagsToHtml = (text) => {
-    const regexURL = /\[url=(.*?)\](.*?)\[\/url\]/g;
-    const regexIMG = /\[img=(.*?)\]/g;
+  // const convertTagsToHtml = (text) => {
+  //   const regexURL = /\[url=(.*?)\](.*?)\[\/url\]/g;
+  //   const regexIMG = /\[img=(.*?)\]/g;
 
-    return text
-      .replace(/\[b\]/g, "<b>")
-      .replace(/\[\/b\]/g, "</b>")
-      .replace(/\[i\]/g, "<i>")
-      .replace(/\[\/i\]/g, "</i>")
-      .replace(/\[u\]/g, "<u>")
-      .replace(/\[\/u\]/g, "</u>")
-      .replace(regexURL, "<a href='$1'>$2</a>")
-      .replace(regexIMG, "<img src='$1' style='margin-left: auto;display: block;transform: translateX(-50%);max-width: 480px'>");
-  }
+  //   return text
+  //     .replace(/\[b\]/g, "<b>")
+  //     .replace(/\[\/b\]/g, "</b>")
+  //     .replace(/\[i\]/g, "<i>")
+  //     .replace(/\[\/i\]/g, "</i>")
+  //     .replace(/\[u\]/g, "<u>")
+  //     .replace(/\[\/u\]/g, "</u>")
+  //     .replace(regexURL, "<a href='$1'>$2</a>")
+  //     .replace(regexIMG, "<img src='$1' style='margin-left: auto;display: block;transform: translateX(-50%);max-width: 480px'>");
+  // }
 
 
-  return loading ? (<div style={{
-    margin: "120px 0",
-    marginLeft: "50%",
-  }}>
-    <PuffLoader color="#1dc483" />
-  </div>) : !data ? navigate('/not-found') : (
+  return loading ? (
+    <div style={{
+      margin: "120px 0",
+      marginLeft: "50%",
+    }}>
+      <PuffLoader color="#1dc483" />
+    </div>
+  ) : !data ? (
+    navigate('/not-found')
+  ) : (
     <>
       <div className="top-item">
         <div className="container">
@@ -139,7 +138,7 @@ const Item = () => {
             <h1>{data.itemName}</h1>
             <div className="prices">
               <div className="price">
-                <h1>{formattedNumber(data.price)}₫</h1>
+                <h1>{formattedNumber(Math.round(discountedPrice))}đ</h1>
               </div>
               {data.promotion && (
                 <div className="discount">
@@ -173,15 +172,19 @@ const Item = () => {
                   <h3>Số lượng</h3>
                   <input type="number" value={quantity} min={1} name='quantity' onChange={(e) => setQuantity(parseInt(e.target.value))} />
                 </div>
+                <div className="total-price">
+                  <h3>Tổng tiền</h3>
+                  <p>{formattedNumber(Math.round(totalPrice))}đ</p>
+                </div>
                 <div className="buy-btn">
-                  <button type="submit" onClick={handleBuy} ><FaCartShopping /><p>Mua hàng</p></button>
+                  <button type="submit" onClick={handleBuy}><FaCartShopping /><p>Mua hàng</p></button>
                 </div>
               </div>
               <div className="types">
-                {/* {data.variants.map((e, i) => (
-                <Type props={e} key={i} onChange={handleType} />
-              ))} */}
-                <p>Types</p>
+                <div className="type">
+                  <h3 className='type-title'>Phân loại</h3>
+                  <p className='type-text'>{data.foodType}</p>
+                </div>
               </div>
             </form>
           </div>
@@ -192,9 +195,7 @@ const Item = () => {
           <div className="bottom-left">
             <h3>ĐẶC ĐIỂM NỔI BẬT</h3>
             <div className="st-border"></div>
-            <p style={{ whiteSpace: "pre-line" }} dangerouslySetInnerHTML={{
-              __html: convertTagsToHtml(data.description)
-            }}></p>
+            <p>{data.description}</p>
             <div className="st-border"></div>
           </div>
           <div className="bottom-right">

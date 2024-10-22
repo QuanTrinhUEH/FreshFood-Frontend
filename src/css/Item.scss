@@ -97,7 +97,65 @@
                 justify-content: space-between;
                 width: 100%;
 
-                .left-buy,
+                .left-buy {
+                    width: 48%;
+
+                    .quantity,
+                    .total-price {
+                        width: 100%;
+                        margin-top: 14px;
+
+                        h3 {
+                            margin: 0 0 5px 0;
+                        }
+
+                        input,
+                        p {
+                            border: 1px solid #e6e6e6;
+                            width: 100%;
+                            background-color: #f8f8f8;
+                            padding: 10px 20px;
+                        }
+
+                        p {
+                            font-weight: bold;
+                            color: #1dc483;
+                        }
+
+                        input[type=number]::-webkit-inner-spin-button {
+                            opacity: 1;
+                            height: 26px;
+                        }
+                    }
+
+                    .buy-btn {
+                        width: 100%;
+
+                        button {
+                            width: 100%;
+                            background-color: #1dc483;
+                            border: none;
+                            text-align: center;
+                            padding: 12px 0;
+                            font-size: 1.5rem;
+                            color: white;
+                            border-radius: .5rem;
+                            margin-top: 20px;
+                            cursor: pointer;
+                            -webkit-transition: all .3s ease-in-out;
+                            transition: all .15s ease-in-out;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            gap: 2px;
+                        }
+
+                        button:hover {
+                            background-color: #05a667;
+                        }
+                    }
+                }
+
                 .types {
                     width: 48%;
 
@@ -111,7 +169,7 @@
                         }
 
                         input,
-                        select {
+                        .type-text {
                             border: 1px solid #e6e6e6;
                             width: 100%;
                             background-color: #f8f8f8;
@@ -121,8 +179,8 @@
                             padding: 10px 20px;
                         }
 
-                        select {
-                            padding: 10px 15px;
+                        .type-text {
+                            padding: 6px 15px;
                         }
 
                         input[type=number]::-webkit-inner-spin-button {
