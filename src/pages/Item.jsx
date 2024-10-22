@@ -17,7 +17,7 @@ const Item = () => {
   const cart = useSelector(state => state.cart);
   const [loading, setLoading] = useState(true)
   const [data, setData] = useState();
-  const [ads, setAds] = useState();
+  const [ads, setAds] = useState([]);
   const [quantity, setQuantity] = useState(1);
   const [img, setImg] = useState();
   const [itemList, setItemList] = useState([]);
@@ -30,11 +30,14 @@ const Item = () => {
   useEffect(() => {
     fetchAPI(`/item/${params.id}`, 'GET').then(e => {
       if (e.status == 200) {
-        console.log("item component", e.data.item);
+        // console.log("item component", e.data.item);
         setData(e.data.item)
         // setItemList(e.data.item.variants.map(type => ({ name: type.name, type: type.type[0] })))
-        // fetchAPI(`/item/get-type/${e.data.item.food_type}/1`)
-        //   .then(e => setAds(e.data.items.slice(0, 4)))
+        fetchAPI(`/item/foodType/${e.data.item.foodType}`)
+          .then(e => {
+            // console.log("ads", e.data.items.slice(0, 4));
+            setAds(e.data.items.slice(0, 4))
+          })
       }
       else {
         setData(false)
@@ -216,14 +219,17 @@ const Item = () => {
             <div className="recommendations">
               <h4 className='highlighted'>SẢN PHẨM LIÊN QUAN</h4>
               <ul>
-                {/* {ads.map((e, i) => (
-                <li key={i}>
-                  <Link to={`/product/${e.ID}`}>
-                    <RecommendItem props={e} />
-                  </Link>
-                </li>
-              ))} */}
-                <p>Recommendations</p>
+                {ads.length > 0 ? (
+                  ads.map((e, i) => (
+                    <li key={i}>
+                      <Link to={`/product/${e.ID}`}>
+                        <RecommendItem props={e} />
+                      </Link>
+                    </li>
+                  ))
+                ) : (
+                  <p>Không có sản phẩm liên quan</p>
+                )}
               </ul>
             </div>
           </div>
