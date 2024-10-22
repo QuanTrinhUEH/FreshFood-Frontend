@@ -19,6 +19,7 @@ import ItemBottom from '../components/ItemBottom';
 import Rating from '../components/Rating';
 import { fetchAPI } from '../../fetchApi';
 import { PuffLoader } from 'react-spinners';
+import ItemPromotion from '../components/ItemPromotion';
 
 const Home = () => {
   const swiperRef1 = useRef(null)
@@ -26,7 +27,8 @@ const Home = () => {
   const swiperRef3 = useRef(null)
   const swiperRef4 = useRef(null)
 
-  const [items, setItems] = useState([])
+  const [items, setItems] = useState([]);
+  const [promotionItem, setPromotionItem] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -34,7 +36,9 @@ const Home = () => {
       try {
         setLoading(true);
         const response = await fetchAPI('/item/', 'GET');
+        const itemWithPromotion = await fetchAPI('/item/promotions', 'GET')
         setItems(response.data.items);
+        setPromotionItem(itemWithPromotion.data.items);
         setLoading(false);
       } catch (error) {
         console.log(error);
@@ -125,7 +129,7 @@ const Home = () => {
             <BodyTop props={items[0]}></BodyTop>
           </div>
           <div className="body-top-right">
-            <h2 className='body-top-right-header'>SẢN PHẨM BÁN CHẠY</h2>
+            <h2 className='body-top-right-header'>SẢN PHẨM NỔI BẬT</h2>
             <p className="body-top-right-text">
               Chúng tôi hài lòng khi mang đến cho Quý khách hàng những sản phẩm chất lượng với mức giá ưu đãi nhất thị trường.
             </p>
@@ -194,12 +198,6 @@ const Home = () => {
 
               {/* TOP LEFT CONTENT */}
               <div className="body-middle-top-left-content">
-                <h3 style={{ fontWeight: "600", borderBottom: ".5px solid #e6e6e6", paddingBottom: ".5rem" }}>SẢN PHẨM</h3>
-                <div className="body-middle-top-left-content-new">
-                  {temp.map((e, i) => <ItemMiddle key={i} props={e} />)}
-
-                </div>
-                <div className="st-border"></div>
                 <div className="body-middle-top-left-content-discount">
                   <h3 style={{ fontWeight: "600", borderBottom: ".5px solid #e6e6e6", paddingBottom: ".5rem" }}>SẢN PHẨM KHUYẾN MẠI</h3>
                   {/* CAROUSEL O DAY */}
@@ -214,24 +212,11 @@ const Home = () => {
                         scrollbar={{ draggable: true }}
                         onSwiper={(swiper) => { swiperRef2.current = swiper; }}
                       >
-                        <SwiperSlide>
-                          <ItemMiddle props={items[0]} />
-                        </SwiperSlide>
-                        <SwiperSlide>
-                          <ItemMiddle props={items[1]} />
-                        </SwiperSlide>
-                        <SwiperSlide>
-                          <ItemMiddle props={items[2]} />
-                        </SwiperSlide>
-                        <SwiperSlide>
-                          <ItemMiddle props={items[3]} />
-                        </SwiperSlide>
-                        <SwiperSlide>
-                          <ItemMiddle props={items[4]} />
-                        </SwiperSlide>
-                        <SwiperSlide>
-                          <ItemMiddle props={items[5]} />
-                        </SwiperSlide>
+                        {promotionItem.map((item, index) => (
+                          <SwiperSlide key={index}>
+                            <ItemPromotion props={item} />
+                          </SwiperSlide>
+                        ))}
                       </Swiper>
                       <div className="btn-controls">
                         <button className="btn-prev" onClick={() => swiperRef2.current && swiperRef2.current.slidePrev()}><HiChevronDoubleLeft /></button>
@@ -239,6 +224,12 @@ const Home = () => {
                       </div>
                     </div>
                   </div>
+                </div>
+                <div className="st-border"></div>
+                <h3 style={{ fontWeight: "600", borderBottom: ".5px solid #e6e6e6", paddingBottom: ".5rem" }}>SẢN PHẨM</h3>
+                <div className="body-middle-top-left-content-new">
+                  {temp.map((e, i) => <ItemMiddle key={i} props={e} />)}
+
                 </div>
               </div>
             </div>
@@ -285,45 +276,6 @@ const Home = () => {
             </div>
           </div>
           <div className="st-border"></div>
-          <div className="body-middle-bottom">
-            <h3 style={{ fontWeight: "600", borderBottom: ".5px solid #e6e6e6", paddingBottom: ".5rem" }}>GIỎ QUÀ TẶNG</h3>
-            <div className="body-middle-bottom-slider">
-              <div>
-                <Swiper
-                  loop={true}
-                  autoplay={{ delay: 4000, disableOnInteraction: false, }}
-                  modules={[Autoplay]}
-                  spaceBetween={30}
-                  slidesPerView={3}
-                  scrollbar={{ draggable: true }}
-                  onSwiper={(swiper) => { swiperRef3.current = swiper; }}
-                >
-                  <SwiperSlide>
-                    <ItemBottom props={items[0]} />
-                  </SwiperSlide>
-                  <SwiperSlide>
-                    <ItemBottom props={items[1]} />
-                  </SwiperSlide>
-                  <SwiperSlide>
-                    <ItemBottom props={items[2]} />
-                  </SwiperSlide>
-                  <SwiperSlide>
-                    <ItemBottom props={items[3]} />
-                  </SwiperSlide>
-                  <SwiperSlide>
-                    <ItemBottom props={items[4]} />
-                  </SwiperSlide>
-                  <SwiperSlide>
-                    <ItemBottom props={items[5]} />
-                  </SwiperSlide>
-                </Swiper>
-                <div className="btn-controls">
-                  <button className="btn-prev" onClick={() => swiperRef3.current && swiperRef3.current.slidePrev()}><HiChevronDoubleLeft /></button>
-                  <button className="btn-next" onClick={() => swiperRef3.current && swiperRef3.current.slideNext()}><HiChevronDoubleRight /> </button>
-                </div>
-              </div>
-            </div>
-          </div>
         </div>
       </div>
       <div className="body-bottom-rating">
@@ -332,7 +284,6 @@ const Home = () => {
             <h3>Ý KIẾN KHÁCH HÀNG</h3>
             <div className="slider">
               <div>
-                {/* newRating.map -> trả ra 2 item cho mỗi element. Sau đó map thêm 1 lần nữa */}
                 <Swiper
                   loop={true}
                   autoplay={{ delay: 4000, disableOnInteraction: false, }}

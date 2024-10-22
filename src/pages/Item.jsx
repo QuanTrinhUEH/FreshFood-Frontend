@@ -8,11 +8,15 @@ import RecommendItem from '../components/RecommendItem';
 import Type from '../components/Type';
 import { fetchAPI } from '../../fetchApi';
 import { PuffLoader } from 'react-spinners';
+import { useDispatch, useSelector } from 'react-redux';
 
 const Item = () => {
   const params = new useParams();
-  const [loading, setLoading] = useState(true)
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const user = useSelector(state => state.user);
+  const cart = useSelector(state => state.cart);
+  const [loading, setLoading] = useState(true)
   const [data, setData] = useState();
   const [ads, setAds] = useState();
   const [quantity, setQuantity] = useState(1);
@@ -25,12 +29,13 @@ const Item = () => {
   }
 
   useEffect(() => {
-    fetchAPI(`/item/get-item/${params.id}`, 'GET').then(e => {
+    fetchAPI(`/item/${params.id}`, 'GET').then(e => {
       if (e.status == 200) {
+        console.log("item component", e.data.item);
         setData(e.data.item)
-        setItemList(e.data.item.variants.map(type => ({ name: type.name, type: type.type[0] })))
-        fetchAPI(`/item/get-type/${e.data.item.food_type}/1`)
-          .then(e => setAds(e.data.items.slice(0, 4)))
+        // setItemList(e.data.item.variants.map(type => ({ name: type.name, type: type.type[0] })))
+        // fetchAPI(`/item/get-type/${e.data.item.food_type}/1`)
+        //   .then(e => setAds(e.data.items.slice(0, 4)))
       }
       else {
         setData(false)
@@ -47,6 +52,9 @@ const Item = () => {
   const formattedNumber = (num) => {
     return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
   }
+  const discountedPrice = data.promotion
+    ? data.price * (1 - data.promotion.discountPercentage / 100)
+    : data.price;
 
 
 
@@ -65,8 +73,8 @@ const Item = () => {
 
   const handleBuy = (e) => {
     e.preventDefault();
-    if (localStorage.getItem('user') == null) {
-      navigate('/signin')
+    if (!user) {
+      navigate('/login')
     }
     else {
       const saveItem = {
@@ -80,15 +88,14 @@ const Item = () => {
         ],
         ID: data.ID
       }
-      const existingCart = JSON.parse(localStorage.getItem('cart')) || []
-      const existingItemIndex = existingCart.findIndex(e => e.itemName == saveItem.itemName)
+      const existingItemIndex = cart.findIndex(e => e.itemName == saveItem.itemName)
       if (existingItemIndex !== -1) {
-        existingCart[existingItemIndex] = saveItem
-        localStorage.setItem('cart', JSON.stringify(existingCart));
+        cart[existingItemIndex] = saveItem
+        dispatch(setCart(cart));
       }
       else {
-        const updatedCart = [...existingCart, saveItem];
-        localStorage.setItem('cart', JSON.stringify(updatedCart));
+        const updatedCart = [...cart, saveItem];
+        dispatch(setCart(updatedCart));
       }
       navigate('/cart')
     }
@@ -134,13 +141,11 @@ const Item = () => {
               <div className="price">
                 <h1>{formattedNumber(data.price)}₫</h1>
               </div>
-              <div className="discount">
-                <del>
-                  <i>
-                    {formattedNumber(data.discount)}₫
-                  </i>
-                </del>
-              </div>
+              {data.promotion && (
+                <div className="discount">
+                  <del><i>Giá gốc: {formattedNumber(data.price)}đ</i></del>
+                </div>
+              )}
             </div>
             <div className="method">
               <div className="tel">
@@ -173,9 +178,10 @@ const Item = () => {
                 </div>
               </div>
               <div className="types">
-                {data.variants.map((e, i) => (
-                  <Type props={e} key={i} onChange={handleType} />
-                ))}
+                {/* {data.variants.map((e, i) => (
+                <Type props={e} key={i} onChange={handleType} />
+              ))} */}
+                <p>Types</p>
               </div>
             </form>
           </div>
@@ -209,13 +215,14 @@ const Item = () => {
             <div className="recommendations">
               <h4 className='highlighted'>SẢN PHẨM LIÊN QUAN</h4>
               <ul>
-                {ads.map((e, i) => (
-                  <li key={i}>
-                    <Link to={`/product/${e.ID}`}>
-                      <RecommendItem props={e} />
-                    </Link>
-                  </li>
-                ))}
+                {/* {ads.map((e, i) => (
+                <li key={i}>
+                  <Link to={`/product/${e.ID}`}>
+                    <RecommendItem props={e} />
+                  </Link>
+                </li>
+              ))} */}
+                <p>Recommendations</p>
               </ul>
             </div>
           </div>

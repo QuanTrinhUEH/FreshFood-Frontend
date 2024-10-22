@@ -15,10 +15,10 @@ const Header = () => {
   const cart = useSelector(state => state.cart);
   const [searchInput, setSearchInput] = useState('');
   const [verify, setVerify] = useState(false)
+  
   const searchInputChange = (e) => {
     setSearchInput(e.target.value)
   }
-  // TODO: INPUT KHÔNG ĐƯỢC TRỐNG
   const handleSubmit = (e) => {
     e.preventDefault();
     if (searchInput === '') {
