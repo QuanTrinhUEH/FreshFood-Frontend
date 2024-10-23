@@ -1,8 +1,8 @@
-import { useEffect, useState } from 'react'
+import React, { useState, useEffect } from 'react'
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom'
 import './App.css'
 import Header from './components/Header.jsx'
 import HeaderAlt from './components/HeaderAlt.jsx'
-import { Routes, Route, useNavigate, useLocation } from 'react-router-dom'
 import Home from './pages/Home.jsx'
 import Footer from './components/Footer.jsx'
 import Contact from './pages/Contact.jsx'
@@ -20,8 +20,6 @@ import ProductPage from './pages/ProductPage.jsx'
 import Checkout from './pages/Checkout.jsx'
 
 function App() {
-  const navigate = useNavigate();
-  const location = useLocation();
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(null);
   const [refreshToken, setRefreshToken] = useState(null);
@@ -85,23 +83,24 @@ function App() {
   //   }
   // }, [refreshToken]);
 
+  
   return (
     <>
       {(location.pathname === '/login' || location.pathname === '/register') ? <HeaderAlt /> : (location.pathname === '/checkout') ? <></> : <Header />}
       <Routes>
-        <Route path='/login' element={<Login />}></Route>
-        <Route path='/register' element={<Register />}></Route>
-        <Route path='/' element={<Home />}></Route>
-        <Route path='/contact' element={<Contact />}></Route>
-        <Route path='/admin/*' element={<Admin />}></Route>
-        <Route path='/account/*' element={<Account />}></Route>
-        <Route path='/product/:id' element={<Item />}></Route>
+        <Route path='/login' element={<Login />} />
+        <Route path='/register' element={<Register />} />
+        <Route path='/' element={<Home />} />
+        <Route path='/contact' element={<Contact />} />
+        <Route path='/admin/*' element={<Admin />} />
+        <Route path='/account/*' element={<Account />} />
+        <Route path='/product/:id' element={<Item />} />
         <Route path="/product/productsCategory/:category" element={<ProductPage />} />
-        <Route path='/search' element={<Search />}></Route>
-        <Route path='/cart' element={<Cart />}></Route>
-        <Route path='/about' element={<About />}></Route>
-        <Route path='*' element={<NotFound />}></Route>
-        <Route path='/checkout' element={<Checkout />}></Route>
+        <Route path='/search' element={<Search />} />
+        <Route path='/cart' element={<Cart />} />
+        <Route path='/about' element={<About />} />
+        <Route path='/checkout' element={<Checkout />} />
+        <Route path='*' element={<NotFound />} />
       </Routes>
       {(location.pathname === '/checkout') ? <></> : <Footer/>}
     </>

@@ -5,6 +5,7 @@ import { Route, Routes, Navigate } from 'react-router-dom';
 import Create from './Create.jsx';
 import Management from './Management.jsx';
 import CustomerFeedback from './CustomerFeedback.jsx';
+import PromotionManagement from './PromotionManagement.jsx';
 
 function Admin() {
     return (
@@ -18,6 +19,7 @@ function Admin() {
                     <Route path='/create' element={<Create />}></Route>
                     <Route path='/management' element={<Management />}></Route>
                     <Route path='/feedback' element={<CustomerFeedback />}></Route>
+                    <Route path="/promotions" element={<PromotionManagement />} />
                 </Routes>
             </div>
         </div>
