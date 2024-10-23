@@ -18,6 +18,7 @@ import Account from './pages/Account.jsx'
 import { refreshTokenResetter } from '../fetchApi.js'
 import ProductPage from './pages/ProductPage.jsx'
 import Checkout from './pages/Checkout.jsx'
+import UserOrders from './pages/UserOrders';
 
 function App() {
   const [user, setUser] = useState(null);
@@ -100,6 +101,7 @@ function App() {
         <Route path='/cart' element={<Cart />} />
         <Route path='/about' element={<About />} />
         <Route path='/checkout' element={<Checkout />} />
+        <Route path="/myOrders" element={<UserOrders />} />
         <Route path='*' element={<NotFound />} />
       </Routes>
       {(location.pathname === '/checkout') ? <></> : <Footer/>}

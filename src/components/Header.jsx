@@ -90,6 +90,7 @@ const Header = () => {
                         <p className="profile-name">{user.userName}</p>
                       </div>
                       {user.role === 'user' && <Link className='nav-dropdown ' to={'/account'}>Tài khoản</Link>}
+                      {user.role === 'user' && <Link className='nav-dropdown ' to={'/myOrders'}>Đơn hàng</Link>}
                       {user.role === 'admin' ? <Link className='nav-dropdown ' to={'/admin'}>Quản lý</Link> : <></>}
                       <button className='nav-dropdown log-out' onClick={handleLogOut}>Đăng xuất</button>
                     </div>
