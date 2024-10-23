@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import Swal from 'sweetalert2';
 import '../css/ProfileUpdate.scss';
 import { useNavigate } from 'react-router-dom';
-import { fetchIMG, fetchAPIWithoutBody } from '../../fetchApi.js';
+import { fetchIMG, fetchAPIWithoutBody, fetchAPI } from '../../fetchApi.js';
 
 const ProfileUpdate = () => {
   const navigate = useNavigate();
@@ -64,14 +64,19 @@ const ProfileUpdate = () => {
     e.preventDefault();
     setLoading(true);
     setError('');
+    const updateData = {
+      userName: userName,
+      profileImage: avatarUrl
+    }
     try {
-      const formData = new FormData();
-      formData.append('userName', userName);
-      formData.append('profileImage', avatarUrl);
-      const updatedUser = await fetchAPIWithoutBody('/user/me', 'GET', token);
-      console.log(updatedUser);
-
-      const response = await fetchIMG('/user/profile', 'PUT', formData, token);
+      const getUpdatedUser = await fetchAPIWithoutBody('/user/me', 'GET', token);
+      const response = await fetchAPI(
+        `/user/profile/${getUpdatedUser.data.user._id}`, 
+        'PUT', 
+        updateData,
+        token,
+        { 'Content-Type': 'application/json' }
+      );
 
       if (response.status === 201) {
         const updatedUser = { ...user, ...response.data.user };

@@ -50,6 +50,7 @@ const Header = () => {
       // navigate(`/search?q=${searchInput}`)
     }
   }
+  console.log(user);
 
   const handleLogOut = () => {
     localStorage.removeItem('userInfo');
@@ -87,11 +88,11 @@ const Header = () => {
                     </Link>
                     <div className="dropdown-content">
                       <div className="nav-profile">
-                        <img src={user.profilePicture} alt="" className="profile-img" />
+                        <img src={user.profileImage} alt="" className="profile-img" />
                         <p className="profile-name">{user.userName}</p>
                       </div>
                       <Link className='nav-dropdown ' to={'/account'}>Tài khoản</Link>
-                      {user.role === 'admin' ? <Link className='nav-dropdown ' to={'/admin'}>Quản lý</Link> : <Link className='nav-dropdown ' to={'/cart'}>Giỏ hàng</Link>}
+                      {user.role === 'admin' ? <Link className='nav-dropdown ' to={'/admin'}>Quản lý</Link> : <></>}
                       <button className='nav-dropdown log-out' onClick={handleLogOut}>Đăng xuất</button>
                     </div>
                   </div>

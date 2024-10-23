@@ -26,6 +26,7 @@ export const fetchAPIWithoutBody = async (endpoint, method, token) => {
     return data
 }
 export const fetchIMG = async (endpoint, method, bodyData, token) => {
+    console.log(bodyData);
     const response = await fetch(API_URL + endpoint, {
         method,
         mode: "cors",

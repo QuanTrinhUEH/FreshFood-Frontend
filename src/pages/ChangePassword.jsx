@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import "../css/ChangePassword.scss";
-import { fetchAPI } from '../../fetchApi';
+import { fetchAPI, fetchAPIWithoutBody } from '../../fetchApi';
 
 function ChangePassword() {
     const [oldPassword, setOldPassword] = useState('');
@@ -33,7 +33,8 @@ function ChangePassword() {
             return;
         }
         try {
-            const data = await fetchAPI('/user/update/password', 'PUT', { password: oldPassword, newPassword }, localStorage.getItem('token'))
+            const getUpdatedUser = await fetchAPIWithoutBody('/user/me', 'GET', localStorage.getItem('tokenInfo'));
+            const data = await fetchAPI(`/user/password/${getUpdatedUser.data.user._id}`, 'PUT', { password: oldPassword, newPassword }, localStorage.getItem('tokenInfo'))
             if (data.status == 200) {
                 localStorage.setItem('userInfo', JSON.stringify(data.data.user))
                 localStorage.setItem('tokenInfo', data.data.token)
@@ -46,7 +47,7 @@ function ChangePassword() {
                         text: 'Đổi mật khẩu thành công',
                         timer: 3000
                     }
-                ).then(() => navigate(0))
+                ).then(() => navigate('/'))
             }
             else if (data.status == 403) {
                 Swal.fire(
