@@ -12,7 +12,7 @@ function ChangePassword() {
     const navigate = useNavigate();
 
     useEffect(() => {
-        if (!localStorage.getItem('user') || !localStorage.getItem('token')) {
+        if (!localStorage.getItem('userInfo') || !localStorage.getItem('tokenInfo')) {
             navigate('/')
         }
     }, [])
@@ -35,9 +35,9 @@ function ChangePassword() {
         try {
             const data = await fetchAPI('/user/update/password', 'PUT', { password: oldPassword, newPassword }, localStorage.getItem('token'))
             if (data.status == 200) {
-                localStorage.setItem('user', JSON.stringify(data.data.user))
-                localStorage.setItem('token', data.data.token)
-                localStorage.setItem('refreshToken', data.data.refreshToken)
+                localStorage.setItem('userInfo', JSON.stringify(data.data.user))
+                localStorage.setItem('tokenInfo', data.data.token)
+                localStorage.setItem('refreshTokenInfo', data.data.refreshToken)
                 setLoading(false)   
                 Swal.fire(
                     {

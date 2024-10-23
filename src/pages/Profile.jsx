@@ -2,36 +2,61 @@ import React, { useEffect, useState } from 'react';
 import Swal from 'sweetalert2';
 import '../css/ProfileUpdate.scss';
 import { useNavigate } from 'react-router-dom';
-import { fetchIMG } from '../../fetchApi.js';
+import { fetchIMG, fetchAPIWithoutBody } from '../../fetchApi.js';
 
 const ProfileUpdate = () => {
   const navigate = useNavigate();
-  const [user, setUser] = useState(null);
-  const [token, setToken] = useState(null);
+  const [user, setUser] = useState(JSON.parse(localStorage.getItem('userInfo')));
+  const [token, setToken] = useState(localStorage.getItem('tokenInfo'));
 
   useEffect(() => {
-    const storedUser = localStorage.getItem('user');
-    const storedToken = localStorage.getItem('token');
-    if (storedUser && storedToken) {
-      setUser(JSON.parse(storedUser));
-      setToken(storedToken);
-    } else {
+    if (!user || !token)
       navigate('/');
-    }
-  }, [navigate]);
+  }, []);
 
-  const [username, setUsername] = useState(user?.username || '');
-  const [avatarUrl, setAvatarUrl] = useState(user?.profile_picture || '');
+  const [userName, setUserName] = useState(user?.userName || '');
+  const [avatarUrl, setAvatarUrl] = useState(user?.profilePicture || '');
   const [avatar, setAvatar] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  const handleAvatarChange = (e) => {
+  const handleAvatarChange = async (e) => {
     const file = e.target.files[0];
-    setAvatar(file);
     if (file && file.type.startsWith('image/')) {
-      const avatarURL = URL.createObjectURL(file);
-      setAvatarUrl(avatarURL);
+      setLoading(true);
+      setError('');
+      try {
+        const formData = new FormData();
+        formData.append('image', file, file.name);
+
+        const response = await fetchIMG('/upload', 'POST', formData, token);
+        console.log(response);
+
+        if (response.status === 200) {
+          const avatarURL = response.data.fileUrl; // Assuming the API returns an array of image URLs
+          setAvatarUrl(avatarURL);
+          setAvatar(file);
+          Swal.fire({
+            icon: 'success',
+            title: 'Success',
+            text: 'Avatar đã được tải lên thành công',
+            timer: 3000
+          });
+        } else {
+          throw new Error(response.message || 'Upload failed');
+        }
+      } catch (err) {
+        console.error('Error:', err.message);
+        setError('Có lỗi xảy ra khi tải lên avatar, vui lòng thử lại');
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: err.message || 'Có lỗi xảy ra khi tải lên avatar, vui lòng thử lại',
+          timer: 3000
+        });
+      } finally {
+        setLoading(false);
+      }
     }
   };
 
@@ -41,15 +66,15 @@ const ProfileUpdate = () => {
     setError('');
     try {
       const formData = new FormData();
-      if (avatar) {
-        formData.append('avatar', avatar, avatar.name);
-      }
-      formData.append('username', username);
+      formData.append('userName', userName);
+      formData.append('profileImage', avatarUrl);
+      const updatedUser = await fetchAPIWithoutBody('/user/me', 'GET', token);
+      console.log(updatedUser);
 
-      const response = await fetchIMG('/user/update/profile', 'PUT', formData, token);
+      const response = await fetchIMG('/user/profile', 'PUT', formData, token);
 
       if (response.status === 201) {
-        const updatedUser = {...user, ...response.data.user};
+        const updatedUser = { ...user, ...response.data.user };
         localStorage.setItem('user', JSON.stringify(updatedUser));
         setUser(updatedUser);
         setLoading(false);
@@ -80,8 +105,8 @@ const ProfileUpdate = () => {
             type="text"
             id="name"
             name="name"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
+            value={userName}
+            onChange={(e) => setUserName(e.target.value)}
             required
           />
         </div>

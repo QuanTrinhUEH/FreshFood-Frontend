@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import '../css/Checkout.scss'
 import { fetchAPI } from '../../fetchApi'
+import Swal from 'sweetalert2'
 
 const Checkout = () => {
   const navigate = useNavigate();
@@ -40,7 +41,7 @@ const Checkout = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     const orderData = {
       items: cart.map(item => ({
         itemId: item._id,
@@ -52,20 +53,40 @@ const Checkout = () => {
     };
 
     try {
-      const response = await fetchAPI('/order/', 'POST', orderData);
-      if (response.status === 200) {
+      const tokenInfo = localStorage.getItem('tokenInfo');
+      const response = await fetchAPI('/order/', 'POST', orderData, tokenInfo);
+      if (response.status === 201) {
         // Xóa giỏ hàng sau khi đặt hàng thành công
         localStorage.removeItem('cartInfo');
-        // Chuyển hướng đến trang xác nhận đơn hàng
-        navigate('/order-confirmation', { state: { orderId: response.data.orderId } });
+
+        // Hiển thị thông báo đặt hàng thành công
+        Swal.fire({
+          icon: 'success',
+          title: 'Đặt hàng thành công!',
+          confirmButtonText: 'OK'
+        }).then((result) => {
+          if (result.isConfirmed) {
+            // Chuyển hướng về trang chủ hoặc trang giỏ hàng
+            navigate('/');
+          }
+        });
       } else {
         // Xử lý lỗi nếu có
-        console.error('Đặt hàng thất bại:', response.data);
-        alert('Đặt hàng thất bại. Vui lòng thử lại.');
+        Swal.fire({
+          icon: 'error',
+          title: 'Đặt hàng thất bại',
+          text: 'Vui lòng thử lại sau.',
+          confirmButtonText: 'OK'
+        });
       }
     } catch (error) {
       console.error('Lỗi khi đặt hàng:', error);
-      alert('Có lỗi xảy ra. Vui lòng thử lại sau.');
+      Swal.fire({
+        icon: 'error',
+        title: 'Có lỗi xảy ra',
+        text: 'Vui lòng thử lại sau.',
+        confirmButtonText: 'OK'
+      });
     }
   };
 

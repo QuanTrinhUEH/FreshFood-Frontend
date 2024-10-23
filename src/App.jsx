@@ -35,53 +35,55 @@ function App() {
     if (storedRefreshToken) setRefreshToken(storedRefreshToken);
   }, []);
 
-  const cycleTokenAuth = async () => {
-    try {
-      const data = await refreshTokenResetter('/token/request', 'POST', refreshToken);
-      if (data.status == 200) {
-        setUser(data.data.user);
-        setToken(data.data.token);
-        setRefreshToken(data.data.refreshToken);
-        localStorage.setItem('userInfo', JSON.stringify(data.data.user));
-        localStorage.setItem('tokenInfo', data.data.token);
-        localStorage.setItem('refreshTokenInfo', data.data.refreshToken);
-      } else {
-        clearAuth();
-        navigate(0);
-      }
-    } catch (e) {
-      console.log('failed');
-    }
-  };
+  // const cycleTokenAuth = async () => {
+  //   try {
+  //     const data = await refreshTokenResetter('/token/request', 'POST', refreshToken);
+  //     if (data.status == 200) {
+  //       setUser(data.data.user);
+  //       setToken(data.data.token);
+  //       setRefreshToken(data.data.refreshToken);
+  //       localStorage.setItem('userInfo', JSON.stringify(data.data.user));
+  //       localStorage.setItem('tokenInfo', data.data.token);
+  //       localStorage.setItem('refreshTokenInfo', data.data.refreshToken);
+  //     } else {
+  //       clearAuth();
+  //       navigate(0);
+  //     }
+  //   } catch (e) {
+  //     console.log('Token refresh failed');
+  //   }
+  // };
 
-  const clearAuth = () => {
-    setUser(null);
-    setToken(null);
-    setRefreshToken(null);
-    localStorage.removeItem('userInfo');
-    localStorage.removeItem('tokenInfo');
-    localStorage.removeItem('refreshTokenInfo');
-    localStorage.removeItem('cartInfo');
-  };
+  // const clearAuth = () => {
+  //   setUser(null);
+  //   setToken(null);
+  //   setRefreshToken(null);
+  //   localStorage.removeItem('userInfo');
+  //   localStorage.removeItem('tokenInfo');
+  //   localStorage.removeItem('refreshTokenInfo');
+  //   localStorage.removeItem('cartInfo');
+  // };
 
-  useEffect(() => {
-    if (!refreshToken) {
-      clearAuth();
-    } else {
-      const initialRefresh = setTimeout(() => {
-        cycleTokenAuth();
-      }, 500);
+  // useEffect(() => {
+  //   if (!refreshToken) {
+  //     clearAuth();
+  //   } else {
+  //     // Initial refresh after 500ms
+  //     const initialRefresh = setTimeout(() => {
+  //       cycleTokenAuth();
+  //     }, 500);
 
-      const intervalId = setInterval(() => {
-        cycleTokenAuth();
-      }, 5 * 10000 - 100);
+  //     // Set up interval to refresh before 1 minute every 10 minutes
+  //     const intervalId = setInterval(() => {
+  //       cycleTokenAuth();
+  //     }, 10 * 60 * 1000);
 
-      return () => {
-        clearTimeout(initialRefresh);
-        clearInterval(intervalId);
-      };
-    }
-  }, [refreshToken]);
+  //     return () => {
+  //       clearTimeout(initialRefresh);
+  //       clearInterval(intervalId);
+  //     };
+  //   }
+  // }, [refreshToken]);
 
   return (
     <>
