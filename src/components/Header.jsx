@@ -1,24 +1,45 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { PiSignInBold, PiMagnifyingGlassBold } from "react-icons/pi";
 import { FaUserAlt, FaFacebookMessenger } from "react-icons/fa";
 import { IoIosArrowDown, IoMdCart } from "react-icons/io";
 import '../css/Header.scss'
-import { useSelector, useDispatch } from 'react-redux';
-import { clearUser } from '../store/userSlice';
-import { clearCart } from '../store/cartSlice';
 
 const Header = () => {
   const navigate = useNavigate();
-  const dispatch = useDispatch();
-  const user = useSelector(state => state.user);
-  const cart = useSelector(state => state.cart);
+  const [user, setUser] = useState(null);
+  const [cart, setCart] = useState([]);
   const [searchInput, setSearchInput] = useState('');
-  const [verify, setVerify] = useState(false)
-  
+  const [verify, setVerify] = useState(false);
+
+  useEffect(() => {
+    const storedUser = localStorage.getItem('userInfo');
+    const storedCart = localStorage.getItem('cart');
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
+    }
+    if (storedCart) {
+      setCart(JSON.parse(storedCart));
+    }
+
+    // Thêm event listener để lắng nghe sự thay đổi của giỏ hàng
+    const handleCartUpdate = () => {
+      const updatedCart = JSON.parse(localStorage.getItem('cart')) || [];
+      setCart(updatedCart);
+    };
+
+    window.addEventListener('cartUpdated', handleCartUpdate);
+
+    // Cleanup function
+    return () => {
+      window.removeEventListener('cartUpdated', handleCartUpdate);
+    };
+  }, []);
+
   const searchInputChange = (e) => {
     setSearchInput(e.target.value)
   }
+
   const handleSubmit = (e) => {
     e.preventDefault();
     if (searchInput === '') {
@@ -26,14 +47,18 @@ const Header = () => {
     }
     else {
       setVerify(false)
-      navigate(`/search?q=${searchInput}`)
+      // navigate(`/search?q=${searchInput}`)
     }
   }
+
   const handleLogOut = () => {
-    dispatch(clearUser());
-    dispatch(clearCart());
+    localStorage.removeItem('userInfo');
+    localStorage.removeItem('cart');
+    setUser(null);
+    setCart([]);
     navigate('/');
   }
+
   return (
     <div className='header'>
       <div className="header-top">
@@ -57,7 +82,7 @@ const Header = () => {
               <div className="header-top-left">
                 <div className="header-top-left-profile">
                   <div className="header-top-dropdown">
-                    <Link className="dropbtn">
+                    <Link to className="dropbtn">
                       Tài khoản <IoIosArrowDown className="nav-arrow" />
                     </Link>
                     <div className="dropdown-content">
@@ -66,7 +91,7 @@ const Header = () => {
                         <p className="profile-name">{user.userName}</p>
                       </div>
                       <Link className='nav-dropdown ' to={'/account'}>Tài khoản</Link>
-                      {user.role == 'admin' ? <Link className='nav-dropdown ' to={'/admin'}>Quản lý</Link> : <Link className='nav-dropdown ' to={'/cart'}>Giỏ hàng</Link>}
+                      {user.role === 'admin' ? <Link className='nav-dropdown ' to={'/admin'}>Quản lý</Link> : <Link className='nav-dropdown ' to={'/cart'}>Giỏ hàng</Link>}
                       <button className='nav-dropdown log-out' onClick={handleLogOut}>Đăng xuất</button>
                     </div>
                   </div>
@@ -75,7 +100,7 @@ const Header = () => {
                   <div className="header-top-left-cart">
                     <IoMdCart />
                     <p>Giỏ hàng</p>
-                    <p>{cart.length ? cart.map(e => e.quantity).reduce((a, c) => a + c, 0) : 0}</p>
+                    <p>{cart.length ? cart.reduce((a, c) => a + c.quantity, 0) : 0}</p>
                   </div>
                 </Link>
               </div>
@@ -106,7 +131,7 @@ const Header = () => {
         <div className="header-middle-search">
           <form className='header-middle-search-form'>
             <label className='error' style={{ color: 'red', fontWeight: '700', background: '#ffffff4f', width: '20%', borderRadius: '7px', border: '2px solid gold', margin: '0 auto 10px', display: verify ? 'block' : 'none' }}>Thanh nhập không được để trống</label>
-            <input className='header-middle-search-form-input' type="text" onChange={(e) => searchInputChange(e)} value={searchInput} placeholder='Từ khóa tìm kiếm' />
+            <input className='header-middle-search-form-input' type="text" onChange={(e) => searchInputChange(e)} value={searchInput} placeholder='Từ khóa t��m kiếm' />
             <button className='header-middle-search-form-button' type='submit' onClick={(e) => handleSubmit(e)}><PiMagnifyingGlassBold /></button>
           </form>
         </div>

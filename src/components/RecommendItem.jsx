@@ -1,9 +1,9 @@
 import React from 'react'
 import '../css/Recommend.scss'
+import { useNavigate } from 'react-router-dom';
 
 const RecommendItem = ({ props }) => {
-  console.log(typeof props.promotion);
-  console.log(props.promotion);
+  const navigate = useNavigate();
   // Kiểm tra xem props có tồn tại không
   if (!props) {
     return <div>Không có thông tin sản phẩm</div>;
@@ -19,16 +19,8 @@ const RecommendItem = ({ props }) => {
 
 
   return (
-    <div className='recommend-item'>
+    <div onClick={() => navigate(`/product/${props._id}`)} className='recommend-item'>
       <img src={props.images[0]} alt="" />
-      {/* <div className="text">
-        <h4>{props.itemName}</h4>
-        <div className="prices">
-          <p className="price">{formattedNumber(Math.round(discountedPrice))}đ</p>
-          {props.promotion && (
-            <p className="original-price"><del>{formattedNumber(props.price)}đ</del></p>
-          )}
-        </div> */}
       <div className="description">
         <p>{props.itemName}</p>
         <h4>{formattedNumber(Math.round(discountedPrice))}đ</h4>

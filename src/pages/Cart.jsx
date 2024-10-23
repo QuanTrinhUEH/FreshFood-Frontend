@@ -1,25 +1,45 @@
-import React from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { removeFromCart, updateQuantity, clearCart } from '../store/cartSlice';
+import { removeFromCart, updateQuantity, clearCart } from '../store/slice/cartSlice';
 import CartItem from '../components/CartItem';
 
 const Cart = () => {
-  const dispatch = useDispatch();
   const navigate = useNavigate();
-  const user = useSelector(state => state.user);
-  const cart = useSelector(state => state.cart);
+  const [user, setUser] = useState(null);
+  const [cart, setCart] = useState([]);
+
+  useEffect(() => {
+    const storedUser = localStorage.getItem('userInfo');
+    const storedCart = localStorage.getItem('cart');
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
+    }
+    if (storedCart) {
+      setCart(JSON.parse(storedCart));
+    }
+  }, []);
 
   const handleDelete = (itemName) => {
-    dispatch(removeFromCart(itemName));
+    const updatedCart = cart.filter(item => item.name !== itemName);
+    setCart(updatedCart);
+    localStorage.setItem('cart', JSON.stringify(updatedCart));
   };
 
   const handleQuantity = (itemName, quantity) => {
-    dispatch(updateQuantity({ itemName, quantity }));
+    const updatedCart = cart.map(item => 
+      item.name === itemName ? {...item, quantity} : item
+    );
+    setCart(updatedCart);
+    localStorage.setItem('cart', JSON.stringify(updatedCart));
   };
 
   const handleDefine = () => {
     // Implement your define logic here
+  };
+
+  const clearCart = () => {
+    setCart([]);
+    localStorage.removeItem('cart');
   };
 
   if (!user) {
@@ -58,7 +78,7 @@ const Cart = () => {
             </div>
             <div className="end-btn">
               <button onClick={handleDefine} className='cart-end-btn'>Cập nhật</button>
-              <button onClick={() => dispatch(clearCart())} className='cart-end-btn'>Xóa tất cả</button>
+              <button onClick={clearCart} className='cart-end-btn'>Xóa tất cả</button>
               <button onClick={() => navigate('/checkout')} className='cart-end-btn'>Thanh toán</button>
             </div>
           </>

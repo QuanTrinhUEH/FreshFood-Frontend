@@ -3,8 +3,6 @@ import '../css/SignForm.scss';
 import NavForm from '../components/NavForm.jsx';
 import { useNavigate } from 'react-router-dom';
 import { fetchAPI } from '../../fetchApi.js';
-import { useDispatch, useSelector } from 'react-redux';
-import { setUser } from '../store/userSlice.js';
 
 const Register = () => {
   const [userName, setUserName] = useState('');
@@ -14,14 +12,12 @@ const Register = () => {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-  const dispatch = useDispatch();
-  const user = useSelector(state => state.user);
 
   useEffect(() => {
-    if (user !== null) {
-      navigate('/')
+    if (localStorage.getItem('userInfo') !== null) {
+        navigate('/')
     }
-  }, [user, navigate]);
+}, []);
 
   const handleRegister = async (e) => {
     e.preventDefault();
@@ -48,8 +44,12 @@ const Register = () => {
 
     try {
       const response = await fetchAPI('/user/register', 'POST', userData);
-      if (response.status === 201) {
-        dispatch(setUser(response.data.user));
+      if (response.status === 201) {        
+        // Save to localStorage
+        localStorage.setItem('userInfo', JSON.stringify(response.data.user));
+        localStorage.setItem('tokenInfo', response.data.token);
+        localStorage.setItem('refreshTokenInfo', response.data.refreshToken);
+        
         setLoading(false);
         navigate('/');
       } else {
@@ -57,7 +57,7 @@ const Register = () => {
         setLoading(false);
       }
     } catch (err) {
-      console.log(err)
+      console.log(err);
       setError('Có lỗi xảy ra, vui lòng thử lại');
       setLoading(false);
     }

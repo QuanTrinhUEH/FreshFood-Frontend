@@ -7,21 +7,25 @@ import { FaBasketShopping, FaCartShopping } from 'react-icons/fa6';
 import RecommendItem from '../components/RecommendItem';
 import { fetchAPI } from '../../fetchApi';
 import { PuffLoader } from 'react-spinners';
-import { useDispatch, useSelector } from 'react-redux';
 
 const Item = () => {
   const params = new useParams();
   const navigate = useNavigate();
-  const dispatch = useDispatch();
-  const user = useSelector(state => state.user);
-  const cart = useSelector(state => state.cart);
+  const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true)
   const [data, setData] = useState();
   const [ads, setAds] = useState([]);
   const [quantity, setQuantity] = useState(1);
   const [img, setImg] = useState();
-  const [itemList, setItemList] = useState([]);
   const [totalPrice, setTotalPrice] = useState(0);
+  const [showNotification, setShowNotification] = useState(false);
+
+  useEffect(() => {
+    const storedUser = localStorage.getItem('userInfo');
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
+    }
+  }, []);
 
   const handleImage = (e) => {
     setImg(e.target.src)
@@ -30,12 +34,9 @@ const Item = () => {
   useEffect(() => {
     fetchAPI(`/item/${params.id}`, 'GET').then(e => {
       if (e.status == 200) {
-        // console.log("item component", e.data.item);
         setData(e.data.item)
-        // setItemList(e.data.item.variants.map(type => ({ name: type.name, type: type.type[0] })))
         fetchAPI(`/item/foodType/${e.data.item.foodType}`)
           .then(e => {
-            // console.log("ads", e.data.items.slice(0, 4));
             setAds(e.data.items.slice(0, 4))
           })
       }
@@ -67,54 +68,55 @@ const Item = () => {
     }
   }, [data, quantity]);
 
-  // SUBMIT
-
   const handleBuy = (e) => {
     e.preventDefault();
+
     if (!user) {
-      navigate('/login')
+      navigate('/login');
+      return;
     }
-    else {
-      const saveItem = {
-        itemName: data.itemName,
-        image: data.images[0],
-        quantity,
-        originalPrice: data.price,
-        price: price * quantity,
-        type: [
-          ...itemList
-        ],
-        ID: data.ID
-      }
-      const existingItemIndex = cart.findIndex(e => e.itemName == saveItem.itemName)
-      if (existingItemIndex !== -1) {
-        cart[existingItemIndex] = saveItem
-        dispatch(setCart(cart));
-      }
-      else {
-        const updatedCart = [...cart, saveItem];
-        dispatch(setCart(updatedCart));
-      }
-      navigate('/cart')
+
+    const saveItem = {
+      _id: data._id,
+      itemName: data.itemName,
+      originalPrice: data.price,
+      variants: data.variants,
+      image: data.images[0],
+      quantity,
+      price: discountedPrice * quantity,
+      type: data.foodType,
+    };
+
+    let cart = JSON.parse(localStorage.getItem('cart')) || [];
+    const existingItemIndex = cart.findIndex(item => item._id === saveItem._id);
+    
+    if (existingItemIndex !== -1) {
+      cart[existingItemIndex].quantity += quantity;
+      cart[existingItemIndex].price += saveItem.price;
+    } else {
+      cart.push(saveItem);
     }
-  }
 
-  // Chuyển [b] thành <b> và [/b] thành </b>, chuyển [url] => <a>, [img] => <img>
-  // const convertTagsToHtml = (text) => {
-  //   const regexURL = /\[url=(.*?)\](.*?)\[\/url\]/g;
-  //   const regexIMG = /\[img=(.*?)\]/g;
+    localStorage.setItem('cart', JSON.stringify(cart));
+    setShowNotification(true);
 
-  //   return text
-  //     .replace(/\[b\]/g, "<b>")
-  //     .replace(/\[\/b\]/g, "</b>")
-  //     .replace(/\[i\]/g, "<i>")
-  //     .replace(/\[\/i\]/g, "</i>")
-  //     .replace(/\[u\]/g, "<u>")
-  //     .replace(/\[\/u\]/g, "</u>")
-  //     .replace(regexURL, "<a href='$1'>$2</a>")
-  //     .replace(regexIMG, "<img src='$1' style='margin-left: auto;display: block;transform: translateX(-50%);max-width: 480px'>");
-  // }
+    // Thêm dòng này để thông báo giỏ hàng đã thay đổi
+    window.dispatchEvent(new Event('cartUpdated'));
+  };
 
+  useEffect(() => {
+    if (showNotification) {
+      const timer = setTimeout(() => {
+        setShowNotification(false);
+      }, 3000); // Hide notification after 3 seconds
+
+      return () => clearTimeout(timer);
+    }
+  }, [showNotification]);
+
+  const handleRecommendationClick = (itemId) => {
+    window.location.href = `/product/${itemId}`;
+  };
 
   return loading ? (
     <div style={{
@@ -127,6 +129,11 @@ const Item = () => {
     navigate('/not-found')
   ) : (
     <>
+      {showNotification && (
+        <div className="notification">
+          Sản phẩm đã được thêm vào giỏ hàng thành công!
+        </div>
+      )}
       <div className="top-item">
         <div className="container">
           <div className="top-item-col1">
@@ -196,7 +203,7 @@ const Item = () => {
       <div className="bottom-item">
         <div className="container">
           <div className="bottom-left">
-            <h3>ĐẶC ĐIỂM NỔI BẬT</h3>
+            <h3>LỢI ÍCH CỦA THỰC PHẨM</h3>
             <div className="st-border"></div>
             <p>{data.description}</p>
             <div className="st-border"></div>
@@ -220,10 +227,16 @@ const Item = () => {
               <h4 className='highlighted'>SẢN PHẨM LIÊN QUAN</h4>
               <ul>
                 {ads.length > 0 ? (
-                  ads.map((e, i) => (
+                  ads.map((item, i) => (
                     <li key={i}>
-                      <Link to={`/product/${e.ID}`}>
-                        <RecommendItem props={e} />
+                      <Link
+                        to={`/product/${item._id}`}
+                        onClick={(e) => {
+                          e.preventDefault(); // Ngăn chặn hành vi mặc định của Link
+                          handleRecommendationClick(item._id);
+                        }}
+                      >
+                        <RecommendItem props={item} />
                       </Link>
                     </li>
                   ))

@@ -20,41 +20,68 @@ import ProductPage from './pages/ProductPage.jsx'
 import Checkout from './pages/Checkout.jsx'
 
 function App() {
-
   const navigate = useNavigate();
   const location = useLocation();
+  const [user, setUser] = useState(null);
+  const [token, setToken] = useState(null);
+  const [refreshToken, setRefreshToken] = useState(null);
+
+  useEffect(() => {
+    const storedUser = localStorage.getItem('user');
+    const storedToken = localStorage.getItem('token');
+    const storedRefreshToken = localStorage.getItem('refreshToken');
+    if (storedUser) setUser(JSON.parse(storedUser));
+    if (storedToken) setToken(storedToken);
+    if (storedRefreshToken) setRefreshToken(storedRefreshToken);
+  }, []);
 
   const cycleTokenAuth = async () => {
     try {
-      const data = await refreshTokenResetter('/token/request', 'POST', localStorage.getItem('refreshToken'))
+      const data = await refreshTokenResetter('/token/request', 'POST', refreshToken);
       if (data.status == 200) {
-        localStorage.setItem('user', JSON.stringify(data.data.user))
-        localStorage.setItem('token', data.data.token)
-        localStorage.setItem('refreshToken', data.data.refreshToken)
+        setUser(data.data.user);
+        setToken(data.data.token);
+        setRefreshToken(data.data.refreshToken);
+        localStorage.setItem('user', JSON.stringify(data.data.user));
+        localStorage.setItem('token', data.data.token);
+        localStorage.setItem('refreshToken', data.data.refreshToken);
       } else {
-        localStorage.removeItem('user')
-        localStorage.removeItem('token')
-        localStorage.removeItem('refreshToken')
-        localStorage.removeItem('cart')
-        navigate(0)
+        clearAuth();
+        navigate(0);
       }
     } catch (e) {
-      console.log('failed')
+      console.log('failed');
     }
-  }
+  };
 
-  if (localStorage.getItem('refreshToken') == null) {
-    localStorage.removeItem('cart')
-    localStorage.removeItem('token')
-    localStorage.removeItem('user')
-  } else {
-    setTimeout(() => {
-      cycleTokenAuth();
-    }, 500);
-    setInterval(() => {
-      cycleTokenAuth()
-    }, 5 * 10000 - 100);
-  }
+  const clearAuth = () => {
+    setUser(null);
+    setToken(null);
+    setRefreshToken(null);
+    localStorage.removeItem('user');
+    localStorage.removeItem('token');
+    localStorage.removeItem('refreshToken');
+    localStorage.removeItem('cart');
+  };
+
+  useEffect(() => {
+    if (!refreshToken) {
+      clearAuth();
+    } else {
+      const initialRefresh = setTimeout(() => {
+        cycleTokenAuth();
+      }, 500);
+
+      const intervalId = setInterval(() => {
+        cycleTokenAuth();
+      }, 5 * 10000 - 100);
+
+      return () => {
+        clearTimeout(initialRefresh);
+        clearInterval(intervalId);
+      };
+    }
+  }, [refreshToken]);
 
   return (
     <>

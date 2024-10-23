@@ -11,7 +11,6 @@ export const fetchAPI = async (endpoint, method, bodyData, token) => {
         body: JSON.stringify(bodyData)
     })
     const data = await response.json();
-    console.log("data",data)
     return data
 }
 export const fetchIMG = async (endpoint, method, bodyData, token) => {

@@ -1,9 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import React, { useEffect, useState } from 'react'
+import '../css/SignForm.scss'
+import NavForm from '../components/NavForm'
 import { useNavigate } from 'react-router-dom';
-import { setUser } from '../store/userSlice';
-import { fetchAPI } from '../../fetchApi.js';
-import NavForm from '../components/NavForm.jsx';
+import { fetchAPI } from '../../fetchApi';
 
 const Login = () => {
     const [phoneNumber, setPhoneNumber] = useState('');
@@ -11,14 +10,12 @@ const Login = () => {
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
-    const dispatch = useDispatch();
-    const user = useSelector(state => state.user);
 
     useEffect(() => {
-        if (user !== null) {
+        if (localStorage.getItem('user') !== null) {
             navigate('/')
         }
-    }, [user, navigate]);
+    }, [])
 
     const handleLogin = async (e) => {
         e.preventDefault();
@@ -26,28 +23,35 @@ const Login = () => {
         setError('');
 
         try {
+            console.log(phoneNumber, password)
             const response = await fetchAPI('/user/login', 'POST', {
                 phoneNumber,
                 password
             })
 
             if (response.status === 200) {
-                dispatch(setUser(response.data.user));
-                setLoading(false);
-                navigate('/');
-            } else if (response.status === 403) {
+                console.log("res", response)
+                localStorage.setItem('userInfo', JSON.stringify(response.data.user))
+                localStorage.setItem('tokenInfo', response.data.token)
+                localStorage.setItem('refreshTokenInfo', response.data.refreshToken)
+                localStorage.removeItem('cart');
+                setLoading(false)
+                navigate('/')
+            }
+            else if (response.status === 403) {
                 setError('Sai tài khoản hoặc mật khẩu')
                 setLoading(false)
-            } else {
-                setError(response.error || 'Đăng nhập không thành công');
+            }
+            else {
+                setError('Đăng nhập không thành công');
                 setLoading(false)
             }
-        } catch (e) {
+        }
+        catch (e) {
             setError('Có lỗi xảy ra, vui lòng thử lại');
             setLoading(false)
         }
     };
-
     return (
         <div className="log-form-container">
             <div className="log-form">
@@ -58,7 +62,7 @@ const Login = () => {
                     <h2>Đăng nhập</h2>
                     <form onSubmit={handleLogin}>
                         <div className="input-group">
-                            <label htmlFor="phoneNumber">phoneNumber</label>
+                            <label htmlFor="phoneNumber">Số điện thoại</label>
                             <input
                                 type="tel"
                                 id="phoneNumber"
@@ -88,4 +92,4 @@ const Login = () => {
     )
 }
 
-export default Login;
+export default Login

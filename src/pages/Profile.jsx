@@ -1,29 +1,36 @@
 import React, { useEffect, useState } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import Swal from 'sweetalert2';
 import '../css/ProfileUpdate.scss';
 import { useNavigate } from 'react-router-dom';
 import { fetchIMG } from '../../fetchApi.js';
+import { setUser } from '../store/slice/authSlice.js';
 
 const ProfileUpdate = () => {
-  useEffect(() => {
-    if (!localStorage.getItem('user') || !localStorage.getItem('token')) {
-      navigate('/')
-    }
-  }, [])
+  const navigate = useNavigate();
+  const [user, setUser] = useState(null);
+  const [token, setToken] = useState(null);
 
-  const user = JSON.parse(localStorage.getItem('user')) || {};
-  const [username, setUsername] = useState(user.username)
-  const [avatarUrl, setAvatarUrl] = useState(user.profile_picture)
-  const [avatar, setAvatar] = useState(null)
+  useEffect(() => {
+    const storedUser = localStorage.getItem('user');
+    const storedToken = localStorage.getItem('token');
+    if (storedUser && storedToken) {
+      setUser(JSON.parse(storedUser));
+      setToken(storedToken);
+    } else {
+      navigate('/');
+    }
+  }, [navigate]);
+
+  const [username, setUsername] = useState(user?.username || '');
+  const [avatarUrl, setAvatarUrl] = useState(user?.profile_picture || '');
+  const [avatar, setAvatar] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  const navigate = useNavigate()
-
-
   const handleAvatarChange = (e) => {
     const file = e.target.files[0];
-    setAvatar(file)
+    setAvatar(file);
     if (file && file.type.startsWith('image/')) {
       const avatarURL = URL.createObjectURL(file);
       setAvatarUrl(avatarURL);
@@ -35,37 +42,33 @@ const ProfileUpdate = () => {
     setLoading(true);
     setError('');
     try {
-      const token = localStorage.getItem('token')
-
       const formData = new FormData();
       if (avatar) {
-        formData.append('avatar', avatar, avatar.name)
+        formData.append('avatar', avatar, avatar.name);
       }
-      formData.append('username', username)
-
+      formData.append('username', username);
 
       const response = await fetchIMG('/user/update/profile', 'PUT', formData, token);
 
-
       if (response.status === 201) {
-        localStorage.setItem('user', JSON.stringify(response.data.user))
-        setLoading(false)
-        Swal.fire(
-          {
-            icon: 'success',
-            title: 'Success',
-            text: 'Thay đổi thông tin thành công',
-            timer: 3000
-          }
-        ).then(() => navigate(0))
+        const updatedUser = {...user, ...response.data.user};
+        localStorage.setItem('user', JSON.stringify(updatedUser));
+        setUser(updatedUser);
+        setLoading(false);
+        Swal.fire({
+          icon: 'success',
+          title: 'Success',
+          text: 'Thay đổi thông tin thành công',
+          timer: 3000
+        }).then(() => navigate(0));
       } else {
         setError('Thay đổi không thành công');
-        setLoading(false)
+        setLoading(false);
       }
     } catch (err) {
-      console.log(err)
+      console.log(err);
       setError('Có lỗi xảy ra, vui lòng thử lại');
-      setLoading(false)
+      setLoading(false);
     }
   };
 
