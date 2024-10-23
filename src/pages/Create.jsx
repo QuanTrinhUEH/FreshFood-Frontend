@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { Form, Input, Button, Select } from 'antd';
+import { Form, Input, Button, Select, InputNumber } from 'antd';
 import Swal from 'sweetalert2';
 import { fetchIMG, fetchAPI } from '../../fetchApi'
 import "../css/Create.scss";
@@ -16,8 +16,8 @@ const Create = () => {
   const [imagesData, setImagesData] = useState([]);
   const [foodType, setFoodType] = useState('');
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
   const fileInputRef = useRef(null);
+  const [quantity, setQuantity] = useState(1); // New state for quantity
 
   const handleImageChange = (e) => {
     const files = Array.from(e.target.files);
@@ -99,7 +99,8 @@ const Create = () => {
         variants: variants,
         description: productDescription,
         images: imageUrls,
-        foodType: foodType
+        foodType: foodType,
+        quantity: Number(quantity) // Add quantity to productData
       };
 
       const createResponse = await fetchAPI('/item/', 'POST', productData, localStorage.getItem('tokenInfo'));
@@ -214,6 +215,17 @@ const Create = () => {
             onChange={(e) => setProductDescription(e.target.value)}
             required
             className="product-desc"
+          />
+        </Form.Item>
+
+        <Form.Item className="product-info">
+          <label htmlFor="quantity">Số lượng</label>
+          <InputNumber
+            min={1}
+            value={quantity}
+            onChange={(value) => setQuantity(value)}
+            required
+            id="quantity"
           />
         </Form.Item>
 

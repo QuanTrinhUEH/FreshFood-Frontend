@@ -99,6 +99,34 @@ function Management() {
         });
     };
 
+    const handleQuantityChange = async (productId, newQuantity) => {
+        try {
+            const response = await fetchAPI(`/item/${productId}`, 'PATCH', { quantity: newQuantity }, localStorage.getItem('tokenInfo'));
+            if (response.status === 200) {
+                setProducts(prevProducts => 
+                    prevProducts.map(product => 
+                        product._id === productId ? { ...product, quantity: newQuantity } : product
+                    )
+                );
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Số lượng đã được cập nhật',
+                    showConfirmButton: false,
+                    timer: 1500
+                });
+            } else {
+                throw new Error(response.message || 'Có lỗi xảy ra khi cập nhật số lượng');
+            }
+        } catch (error) {
+            console.error('Error updating product quantity:', error);
+            Swal.fire({
+                icon: 'error',
+                title: 'Lỗi',
+                text: error.message || 'Có lỗi xảy ra khi cập nhật số lượng',
+            });
+        }
+    };
+
     console.log("products", products)
 
     return (
@@ -134,6 +162,7 @@ function Management() {
                                 <th>Ảnh sản phẩm</th>
                                 <th>Giá sản phẩm</th>
                                 <th>Trạng thái</th>
+                                <th>Số lượng</th>
                                 <th>Chức năng</th>
                             </tr>
                         </thead>
@@ -144,6 +173,7 @@ function Management() {
                                     product={product} 
                                     onStatusChange={handleStatusChange} 
                                     onEdit={handleEdit} 
+                                    onQuantityChange={handleQuantityChange} 
                                 />
                             ))}
                         </tbody>

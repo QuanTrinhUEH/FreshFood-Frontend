@@ -160,12 +160,19 @@
                     width: 48%;
 
                     .quantity,
-                    .type {
+                    .type,
+                    .stock {
                         width: 100%;
                         margin-top: 14px;
 
                         h3 {
                             margin: 0 0 5px 0;
+                        }
+
+                        .stock-text {
+                            color: #1dc483;
+                            font-weight: bold;
+                            padding: 10px 15px!important;
                         }
 
                         input,

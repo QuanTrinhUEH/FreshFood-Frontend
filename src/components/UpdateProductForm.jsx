@@ -92,7 +92,7 @@ const UpdateProductForm = ({ product, onClose, onUpdateSuccess }) => {
                     </Form.Item>
                     <Form.Item
                         name="variants"
-                        label="Biến thể"
+                        label="Phân loại"
                     >
                         <Input />
                     </Form.Item>
@@ -132,6 +132,16 @@ const UpdateProductForm = ({ product, onClose, onUpdateSuccess }) => {
                                 </div>
                             )}
                         </Upload>
+                    </Form.Item>
+                    <Form.Item
+                        name="quantity"
+                        label="Số lượng"
+                        rules={[
+                            { required: true, message: 'Vui lòng nhập số lượng sản phẩm' },
+                            { type: 'number', min: 0, message: 'Số lượng phải lớn hơn hoặc bằng 0' }
+                        ]}
+                    >
+                        <InputNumber min={0} style={{ width: '100%' }} />
                     </Form.Item>
                     <Form.Item>
                         <Button className='update-btn' type="primary" htmlType="submit" loading={loading} block>

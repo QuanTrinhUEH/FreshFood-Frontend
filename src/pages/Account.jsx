@@ -4,6 +4,7 @@ import ChangePassword from './ChangePassword';
 import ProfileUpdate from './Profile';
 import AccountNavbar from '../components/AccountNavbar';
 import { Navigate, Route, Routes } from 'react-router-dom';
+import UserOrders from './UserOrders';
 
 function Account() {
     return (
@@ -16,6 +17,7 @@ function Account() {
                     <Route path='/' element={<Navigate to="/account/profileUpdate" />} />
                     <Route path='/profileUpdate' element={<ProfileUpdate />}></Route>
                     <Route path='/changePassword' element={<ChangePassword />}></Route>
+                    <Route path='/myOrders' element={<UserOrders />}></Route>
                 </Routes>
             </div>
         </div>

@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import '../css/Cart.scss';
+import { message } from 'antd';
 
 const CartItem = ({ item, onDelete, onQuantityChange }) => {
     if (!item) return null; // Add this check to prevent errors when item is undefined
 
+    console.log(item);
     const [quantity, setQuantity] = useState(item.quantity);
     const [totalPrice, setTotalPrice] = useState(item.price);
 
@@ -13,8 +15,12 @@ const CartItem = ({ item, onDelete, onQuantityChange }) => {
 
     const handleQuantityChange = (e) => {
         const newQuantity = parseInt(e.target.value);
-        setQuantity(newQuantity);
-        onQuantityChange(newQuantity);
+        if (newQuantity <= item.availableQuantity) {
+            setQuantity(newQuantity);
+            onQuantityChange(newQuantity);
+        } else {
+            message.warning(`Chỉ còn ${item.availableQuantity} sản phẩm có sẵn.`);
+        }
     };
 
     const formatPrice = (price) => {

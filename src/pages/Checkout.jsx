@@ -41,6 +41,19 @@ const Checkout = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    // Check if all items in the cart are available in sufficient quantity
+    const insufficientItems = cart.filter(item => item.quantity > item.availableQuantity);
+    
+    if (insufficientItems.length > 0) {
+      const itemNames = insufficientItems.map(item => item.itemName).join(', ');
+      Swal.fire({
+        icon: 'error',
+        title: 'Số lượng không đủ',
+        text: `Các sản phẩm sau không đủ số lượng: ${itemNames}`,
+      });
+      return;
+    }
 
     const orderData = {
       items: cart.map(item => ({

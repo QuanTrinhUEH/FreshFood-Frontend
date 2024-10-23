@@ -27,6 +27,7 @@ function ManagementItems({ product, onStatusChange, onEdit }) {
             </td>
             <td>{formatPrice(product.price)}</td>
             <td>{getStatusText(product.status)}</td>
+            <td>{product.quantity}</td>
             <td className="action-buttons">
                 <button className="icon-button edit-button" onClick={() => onEdit(product)}>
                     <FaEdit className='management-icon'/>

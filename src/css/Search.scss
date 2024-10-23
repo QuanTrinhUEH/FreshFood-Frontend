@@ -5,97 +5,81 @@
 
 
 .search-container {
-    max-width: 1170px;
-    text-align: center;
-    margin: 100px auto;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
 
-    .pagination {
-        margin: 0 0 70px;
+    .search-title {
+        text-align: center;
+        margin-bottom: 20px;
+    }
 
-        nav {
-            ul {
-                width: 100%;
-                justify-content: center;
-                text-align: center;
-            }
-        }
+    .loader {
+        display: flex;
+        justify-content: center;
+        margin-top: 50px;
+    }
+
+    .no-results {
+        text-align: center;
+        margin-top: 50px;
     }
 
     .results {
-        display: flex;
-        justify-content: start;
-        flex-wrap: wrap;
-        gap: 4%;
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 20px;
 
-        a {
-            cursor: pointer;
-            width: 22%;
-            position: relative;
-            border: 1px solid #e6e6e6;
-            margin-bottom: 1rem;
-            border-radius: .5rem;
-            color: inherit;
+        .search-item {
+            background: rgba(255, 255, 255, 0.85);
+            color: black;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            justify-content: space-between;
+            align-items: center;
 
-            .item {
+            .buy-button {
+                border: none;
+                transition: all 0.15s ease-in-out;
+                background-color: #fff;
+                border: 1px solid #e6e6e6;
+                padding: 5px 15px;
+                border-radius: 30px;
+                color: #35240d;
+                font-size: 15px;
+                display: inline-block;
+                cursor: pointer;
+            }
 
-                .discount-percentage {
-                    top: 1rem;
-                    left: -2px;
-                    padding: 6px 10px;
-                    color: white;
-                    background-color: #1dc483;
-                    position: absolute;
-                    display: flex;
-                    align-items: center;
+            .search-item-info {
+                display: flex;
+                flex-direction: column;
+                gap: 10px;
+                align-items: center;
+                width: 100%;
+            }
+
+            &:hover {
+                .search-item-info {
+                    transition: all 0.15s ease-in-out;
+                    background: rgba(248, 248, 248, 0.85);
+                    border-bottom: 5px solid #1dc483;
                 }
 
-                .top-img {
-                    margin-top: 2rem;
-                    width: 100%;
-                    border-bottom: 1px solid #e6e6e6;
-
-                    img {
-                        width: 100%;
-                    }
-                }
-
-                .price-tags {
-                    .name-tag {
-                        font-size: 1rem;
-                        margin-top: 4px;
-                    }
-
-                    .price-tag {
-                        margin-top: 20px;
-                    }
-
-                    .discount-tag {
-                        color: #999;
-                        font-weight: 700;
-                    }
-
-                    button {
-                        display: flex;
-                        align-items: center;
-                        width: 50%;
-                        margin: 10px auto 1rem;
-                        justify-content: center;
-                        border: 1px solid #e6e6e6;
-                        border-radius: 2rem;
-                        padding: 10px 0;
-                        color: inherit;
-                        cursor: pointer;
-                        -webkit-transition: all 0.3s ease-in-out;
-                        transition: all .15s ease-in-out;
-                        background-color: white;
-                    }
-                }
-
-                &:hover .price-tags button {
-                    color: #fff;
-                    background-color: #1dc483;
+                .buy-button {
+                    transition: all 0.15s ease-in-out;
+                    background-color: #1dc483 !important;
+                    color: white !important;
                 }
             }
+
         }
+    }
+
+    .pagination {
+        display: flex;
+        justify-content: center;
+        margin-top: 30px;
     }
 }
