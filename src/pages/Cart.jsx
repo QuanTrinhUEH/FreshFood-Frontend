@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { removeFromCart, updateQuantity, clearCart } from '../store/slice/cartSlice';
-import CartItem from '../components/CartItem';
+import CartItem from '../components/CartItem.jsx';
+import '../css/Cart.scss';
 
 const Cart = () => {
   const navigate = useNavigate();
@@ -9,37 +9,46 @@ const Cart = () => {
   const [cart, setCart] = useState([]);
 
   useEffect(() => {
-    const storedUser = localStorage.getItem('userInfo');
-    const storedCart = localStorage.getItem('cart');
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
+    if (localStorage.getItem('userInfo')) {
+      setUser(JSON.parse(localStorage.getItem('userInfo')));
     }
+    const storedCart = localStorage.getItem('cartInfo');
     if (storedCart) {
-      setCart(JSON.parse(storedCart));
+      try {
+        const parsedCart = JSON.parse(storedCart);
+        setCart(Array.isArray(parsedCart) ? parsedCart : []);
+      } catch (error) {
+        console.error("Error parsing cart data:", error);
+        setCart([]);
+      }
     }
   }, []);
 
   const handleDelete = (itemName) => {
-    const updatedCart = cart.filter(item => item.name !== itemName);
+    const updatedCart = cart.filter(item => item.itemName !== itemName);
     setCart(updatedCart);
-    localStorage.setItem('cart', JSON.stringify(updatedCart));
+    localStorage.setItem('cartInfo', JSON.stringify(updatedCart));
   };
 
   const handleQuantity = (itemName, quantity) => {
-    const updatedCart = cart.map(item => 
-      item.name === itemName ? {...item, quantity} : item
-    );
+    const updatedCart = cart.map(item => {
+      if (item.itemName === itemName) {
+        const newQuantity = parseInt(quantity);
+        return {
+          ...item,
+          quantity: newQuantity,
+          price: item.originalPrice * newQuantity
+        };
+      }
+      return item;
+    });
     setCart(updatedCart);
-    localStorage.setItem('cart', JSON.stringify(updatedCart));
-  };
-
-  const handleDefine = () => {
-    // Implement your define logic here
+    localStorage.setItem('cartInfo', JSON.stringify(updatedCart));
   };
 
   const clearCart = () => {
     setCart([]);
-    localStorage.removeItem('cart');
+    localStorage.removeItem('cartInfo');
   };
 
   if (!user) {
@@ -47,7 +56,7 @@ const Cart = () => {
       <div className="cart-page">
         <div className="container">
           <h1>GIỎ HÀNG</h1>
-          <p className='no-cart-item'>Bạn chưa đăng nhập. Đăng nhập tại <Link to={'/signin'}>đây</Link> để mua sắm.</p>
+          <p className='no-cart-item'>Bạn chưa đăng nhập. Đăng nhập tại <Link to={'/login'}>đây</Link> để mua sắm.</p>
         </div>
       </div>
     );
@@ -67,17 +76,21 @@ const Cart = () => {
                 <h4 className='cart-header-text'>SẢN PHẨM</h4>
                 <h4 className='cart-header-text'>GIÁ</h4>
                 <h4 className='cart-header-text'>SỐ LƯỢNG</h4>
-                <h4 className='cart-header-text'>TỔNG SỐ</h4>
+                <h4 className='cart-header-text'>TỔNG TIỀN</h4>
                 <h4 className='cart-header-text'>XÓA</h4>
               </div>
               <ul className="cart-list">
                 {cart.map((item, i) => (
-                  <CartItem props={item} key={i} onClick={handleDelete} onChange={handleQuantity} />
+                  <CartItem 
+                    key={i} 
+                    item={item} 
+                    onDelete={() => handleDelete(item.itemName)} 
+                    onQuantityChange={(quantity) => handleQuantity(item.itemName, quantity)} 
+                  />
                 ))}
               </ul>
             </div>
             <div className="end-btn">
-              <button onClick={handleDefine} className='cart-end-btn'>Cập nhật</button>
               <button onClick={clearCart} className='cart-end-btn'>Xóa tất cả</button>
               <button onClick={() => navigate('/checkout')} className='cart-end-btn'>Thanh toán</button>
             </div>

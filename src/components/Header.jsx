@@ -100,7 +100,6 @@ const Header = () => {
                   <div className="header-top-left-cart">
                     <IoMdCart />
                     <p>Giỏ hàng</p>
-                    <p>{cart.length ? cart.reduce((a, c) => a + c.quantity, 0) : 0}</p>
                   </div>
                 </Link>
               </div>
@@ -131,7 +130,7 @@ const Header = () => {
         <div className="header-middle-search">
           <form className='header-middle-search-form'>
             <label className='error' style={{ color: 'red', fontWeight: '700', background: '#ffffff4f', width: '20%', borderRadius: '7px', border: '2px solid gold', margin: '0 auto 10px', display: verify ? 'block' : 'none' }}>Thanh nhập không được để trống</label>
-            <input className='header-middle-search-form-input' type="text" onChange={(e) => searchInputChange(e)} value={searchInput} placeholder='Từ khóa t��m kiếm' />
+            <input className='header-middle-search-form-input' type="text" onChange={(e) => searchInputChange(e)} value={searchInput} placeholder='Từ khóa tìm kiếm' />
             <button className='header-middle-search-form-button' type='submit' onClick={(e) => handleSubmit(e)}><PiMagnifyingGlassBold /></button>
           </form>
         </div>

@@ -80,14 +80,15 @@ const Item = () => {
       _id: data._id,
       itemName: data.itemName,
       originalPrice: data.price,
+      discountedPrice: data.promotion ? discountedPrice : data.price,
       variants: data.variants,
       image: data.images[0],
       quantity,
-      price: discountedPrice * quantity,
+      price: (data.promotion ? discountedPrice : data.price) * quantity,
       type: data.foodType,
     };
 
-    let cart = JSON.parse(localStorage.getItem('cart')) || [];
+    let cart = JSON.parse(localStorage.getItem('cartInfo')) || [];
     const existingItemIndex = cart.findIndex(item => item._id === saveItem._id);
     
     if (existingItemIndex !== -1) {
@@ -97,7 +98,7 @@ const Item = () => {
       cart.push(saveItem);
     }
 
-    localStorage.setItem('cart', JSON.stringify(cart));
+    localStorage.setItem('cartInfo', JSON.stringify(cart));
     setShowNotification(true);
 
     // Thêm dòng này để thông báo giỏ hàng đã thay đổi
