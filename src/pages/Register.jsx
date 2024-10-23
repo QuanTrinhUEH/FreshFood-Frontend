@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import '../css/SignForm.scss';
-import NavForm from '../components/NavForm';
+import NavForm from '../components/NavForm.jsx';
 import { useNavigate } from 'react-router-dom';
-import { fetchAPI, fetchIMG } from '../../fetchApi.js';
+import { fetchAPI } from '../../fetchApi.js';
 
-const SignUp = () => {
-  const [username, setUsername] = useState('');
-  const [email, setEmail] = useState('');
+const Register = () => {
+  const [userName, setUserName] = useState('');
+  const [phoneNumber, setPhoneNumber] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
@@ -14,10 +14,10 @@ const SignUp = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (localStorage.getItem('user') !== null) {
-      navigate('/');
+    if (localStorage.getItem('userInfo') !== null) {
+        navigate('/')
     }
-  }, [navigate]);
+}, []);
 
   const handleRegister = async (e) => {
     e.preventDefault();
@@ -36,25 +36,28 @@ const SignUp = () => {
       return;
     }
 
-    let formData = new FormData();
-    formData.append('email', email);
-    formData.append('username', username);
-    formData.append('password', password);
+    const userData = {
+      userName: userName,
+      phoneNumber: phoneNumber,
+      password: password,
+    };
 
     try {
-      const response = await fetchIMG('/user/register', 'POST', formData);
-      if (response.status === 201) {
-        localStorage.setItem('user', JSON.stringify(response.data.user));
-        localStorage.setItem('token', response.data.token);
-        localStorage.setItem('refreshToken', response.data.refreshToken);
-        localStorage.removeItem('cart');
+      const response = await fetchAPI('/user/register', 'POST', userData);
+      if (response.status === 201) {        
+        // Save to localStorage
+        localStorage.setItem('userInfo', JSON.stringify(response.data.user));
+        localStorage.setItem('tokenInfo', response.data.token);
+        localStorage.setItem('refreshTokenInfo', response.data.refreshToken);
+        
         setLoading(false);
-        navigate(0);
+        navigate('/');
       } else {
-        setError('Đăng ký không thành công');
+        setError(response.message || 'Đăng ký không thành công');
         setLoading(false);
       }
     } catch (err) {
+      console.log(err);
       setError('Có lỗi xảy ra, vui lòng thử lại');
       setLoading(false);
     }
@@ -74,18 +77,18 @@ const SignUp = () => {
               <input
                 type="text"
                 id="name"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
+                value={userName}
+                onChange={(e) => setUserName(e.target.value)}
                 required
               />
             </div>
             <div className="input-group">
-              <label htmlFor="email">Email</label>
+              <label htmlFor="phoneNumber">Số điện thoại</label>
               <input
-                type="email"
-                id="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                type="tel"
+                id="phoneNumber"
+                value={phoneNumber}
+                onChange={(e) => setPhoneNumber(e.target.value)}
                 required
               />
             </div>
@@ -120,4 +123,4 @@ const SignUp = () => {
   );
 };
 
-export default SignUp;
+export default Register;

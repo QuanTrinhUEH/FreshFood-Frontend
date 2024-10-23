@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import "../css/Contact.scss"
+import { fetchAPI } from '../../fetchApi';
+import Swal from 'sweetalert2';
+import { useNavigate } from 'react-router-dom';
 
 function Contact() {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    content: ''
+    feedback: ''
   });
 
   const handleChange = (e) => {
@@ -16,42 +18,39 @@ function Contact() {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Xử lý dữ liệu form khi submit
-    console.log('Form data submitted:', formData);
-    // Bạn có thể thêm mã để gửi dữ liệu tới server ở đây
+    const data = await fetchAPI('/feedback/submit', 'POST', formData, localStorage.getItem('tokenInfo'))
+    if (data.status == 201) {
+      Swal.fire(
+        {
+          icon: 'success',
+          title: 'Success',
+          text: 'Gửi phản hồi thành công',
+          timer: 3000
+        }
+      ).then(() => navigate('/'))
+    } else {
+      Swal.fire(
+        {
+          icon: 'error',
+          title: 'Oops...',
+        }
+      )
+    }
   };
 
   return (
     <form className='contact-container' onSubmit={handleSubmit}>
       <h2>LIÊN HỆ</h2>
       <div className="contact-info">
-        <label htmlFor="name">Họ và tên</label>
-        <input
-          type="text"
-          id='name'
-          value={formData.name}
-          onChange={handleChange}
-        />
-      </div>
-      <div className="contact-info">
-        <label htmlFor="email">Email</label>
-        <input
-          type="email"
-          id='email'
-          value={formData.email}
-          onChange={handleChange}
-        />
-      </div>
-      <div className="contact-info">
-        <label htmlFor="content">Nội dung</label>
+        <label htmlFor="feedback">Nội dung</label>
         <textarea
-          id='content'
-          cols={50}
-          rows={4}
-          value={formData.content}
+          id='feedback'
+          value={formData.feedback}
           onChange={handleChange}
+          rows={10}
+          cols={50}
         />
       </div>
       <div className="submit">

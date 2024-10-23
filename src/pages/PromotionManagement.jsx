@@ -1,28 +1,28 @@
 import React, { useEffect, useState } from 'react';
 import Swal from 'sweetalert2';
 import "../css/Management.scss";
-import ManagementItems from '../components/ManagementItems';
 import { IoSearch } from "react-icons/io5";
-import UpdateProductForm from '../components/UpdateProductForm';
 import { fetchAPI, fetchAPIWithoutBody } from '../../fetchApi';
 import { useNavigate } from 'react-router-dom';
+import PromotionItems from '../components/PromotionItems';
+import UpdatePromotionForm from '../components/UpdatePromotionForm';
 
-function Management() {
-    const [products, setProducts] = useState([]);
+function PromotionManagement() {
+    const [promotions, setPromotions] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
     const [page, setPage] = useState(1);
     const [pageSize, setPageSize] = useState(10);
     const [status, setStatus] = useState('');
     const [totalPages, setTotalPages] = useState(1);
-    const [selectedProduct, setSelectedProduct] = useState(null);
+    const [selectedPromotion, setSelectedPromotion] = useState(null);
 
     const navigate = useNavigate();
 
     useEffect(() => {
-        fetchProducts();
+        fetchPromotions();
     }, [page, pageSize, status]);
 
-    const fetchProducts = async () => {
+    const fetchPromotions = async () => {
         try {
             const queryParams = new URLSearchParams({
                 page,
@@ -31,38 +31,39 @@ function Management() {
                 ...(status !== '' && { status })
             }).toString();
 
-            const response = await fetchAPIWithoutBody(`/item/management?${queryParams}`, 'GET', localStorage.getItem('tokenInfo'));
+            const response = await fetchAPIWithoutBody(`/promotion/?${queryParams}`, 'GET', localStorage.getItem('tokenInfo'));
             console.log(response)
             if (response.success === true) {
-                setProducts(response.data.items);
+                setPromotions(response.data.promotions);
                 setTotalPages(response.data.totalPages);
             }
         } catch (error) {
-            console.error('Error fetching products:', error);
+            console.error('Error fetching promotions:', error);
         }
     };
 
     const handleSearch = () => {
         setPage(1);
-        fetchProducts();
+        fetchPromotions();
     };
 
-    const handleEdit = (product) => {
-        setSelectedProduct(product);
+    const handleEdit = (promotion) => {
+        setSelectedPromotion(promotion);
     };
 
     const handleCloseFrame = () => {
-        setSelectedProduct(null);
+        setSelectedPromotion(null);
+        fetchPromotions();
     };
 
-    const handleStatusChange = async (productId, newStatus) => {
+    const handleStatusChange = async (promotionId, newStatus) => {
         try {
-            const response = await fetchAPI(`/item/${productId}`, 'PATCH', { status: newStatus }, localStorage.getItem('tokenInfo'));
+            const response = await fetchAPI(`/promotion/${promotionId}`, 'PATCH', { status: newStatus }, localStorage.getItem('tokenInfo'));
             if (response.status === 200) {
                 // Update the product status in the local state
-                setProducts(prevProducts => 
-                    prevProducts.map(product => 
-                        product._id === productId ? { ...product, status: newStatus } : product
+                setPromotions(prevPromotions =>
+                    prevPromotions.map(promotion =>
+                        promotion._id === promotionId ? { ...promotion, status: newStatus } : promotion
                     )
                 );
                 Swal.fire({
@@ -75,7 +76,7 @@ function Management() {
                 throw new Error(response.message || 'Có lỗi xảy ra khi cập nhật trạng thái');
             }
         } catch (error) {
-            console.error('Error updating product status:', error);
+            console.error('Error updating promotion status:', error);
             Swal.fire({
                 icon: 'error',
                 title: 'Lỗi',
@@ -84,30 +85,13 @@ function Management() {
         }
     };
 
-    const handleUpdateSuccess = (updatedProduct) => {
-        setProducts(prevProducts => 
-            prevProducts.map(product => 
-                product._id === updatedProduct._id ? updatedProduct : product
-            )
-        );
-        setSelectedProduct(null);
-        Swal.fire({
-            icon: 'success',
-            title: 'Sản phẩm đã được cập nhật thành công',
-            showConfirmButton: false,
-            timer: 1500
-        });
-    };
-
-    console.log("products", products)
-
     return (
         <div className="product-management content-container">
-            <h1>Quản lý sản phẩm</h1>
+            <h1>Quản lý khuyến mãi</h1>
             <div className="search-bar">
                 <input
                     type="text"
-                    placeholder="Nhập tên sản phẩm..."
+                    placeholder="Nhập tên khuyến mãi..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                 />
@@ -120,36 +104,37 @@ function Management() {
                     <option value="1">Hoạt động</option>
                 </select>
                 <select value={pageSize} onChange={(e) => setPageSize(Number(e.target.value))}>
-                    <option value="10">10 sản phẩm/trang</option>
-                    <option value="20">20 sản phẩm/trang</option>
-                    <option value="50">50 sản phẩm/trang</option>
+                    <option value="10">10 khuyến mãi/trang</option>
+                    <option value="20">20 khuyến mãi/trang</option>
+                    <option value="50">50 khuyến mãi/trang</option>
                 </select>
             </div>
             <div className="product-list">
-                {products.length > 0 ? (
+                {promotions.length > 0 ? (
                     <table>
                         <thead>
                             <tr>
-                                <th>Tên sản phẩm</th>
-                                <th>Ảnh sản phẩm</th>
-                                <th>Giá sản phẩm</th>
+                                <th>Tên khuyến mãi</th>
+                                <th>Phần trăm giảm giá</th>
+                                <th>Ngày bắt đầu</th>
+                                <th>Ngày kết thúc</th>
                                 <th>Trạng thái</th>
                                 <th>Chức năng</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {products.map((product, i) => (
-                                <ManagementItems 
-                                    key={i} 
-                                    product={product} 
-                                    onStatusChange={handleStatusChange} 
-                                    onEdit={handleEdit} 
+                            {promotions.map((promotion, i) => (
+                                <PromotionItems
+                                    key={i}
+                                    promotion={promotion}
+                                    onStatusChange={handleStatusChange}
+                                    onEdit={handleEdit}
                                 />
                             ))}
                         </tbody>
                     </table>
                 ) : (
-                    <p>Không tìm thấy sản phẩm</p>
+                    <p>Không tìm thấy khuyến mãi</p>
                 )}
             </div>
             <div className="pagination">
@@ -157,17 +142,13 @@ function Management() {
                 <span>Trang {page} / {totalPages}</span>
                 <button onClick={() => setPage(prev => Math.min(prev + 1, totalPages))} disabled={page === totalPages}>Trang sau</button>
             </div>
-            {selectedProduct && (
+            {selectedPromotion && (
                 <div className='update-frame'>
-                    <UpdateProductForm 
-                        product={selectedProduct} 
-                        onClose={handleCloseFrame} 
-                        onUpdateSuccess={handleUpdateSuccess} 
-                    />
+                    <UpdatePromotionForm promotion={selectedPromotion} onClose={handleCloseFrame} />
                 </div>
             )}
         </div>
     );
 }
 
-export default Management;
+export default PromotionManagement;

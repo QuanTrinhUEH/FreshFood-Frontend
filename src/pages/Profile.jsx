@@ -2,31 +2,61 @@ import React, { useEffect, useState } from 'react';
 import Swal from 'sweetalert2';
 import '../css/ProfileUpdate.scss';
 import { useNavigate } from 'react-router-dom';
-import { fetchIMG } from '../../fetchApi.js';
+import { fetchIMG, fetchAPIWithoutBody, fetchAPI } from '../../fetchApi.js';
 
 const ProfileUpdate = () => {
-  useEffect(() => {
-    if (!localStorage.getItem('user') || !localStorage.getItem('token')) {
-      navigate('/')
-    }
-  }, [])
+  const navigate = useNavigate();
+  const [user, setUser] = useState(JSON.parse(localStorage.getItem('userInfo')));
+  const [token, setToken] = useState(localStorage.getItem('tokenInfo'));
 
-  const user = JSON.parse(localStorage.getItem('user')) || {};
-  const [username, setUsername] = useState(user.username)
-  const [avatarUrl, setAvatarUrl] = useState(user.profile_picture)
-  const [avatar, setAvatar] = useState(null)
+  useEffect(() => {
+    if (!user || !token)
+      navigate('/');
+  }, []);
+
+  const [userName, setUserName] = useState(user?.userName || '');
+  const [avatarUrl, setAvatarUrl] = useState(user?.profilePicture || '');
+  const [avatar, setAvatar] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  const navigate = useNavigate()
-
-
-  const handleAvatarChange = (e) => {
+  const handleAvatarChange = async (e) => {
     const file = e.target.files[0];
-    setAvatar(file)
     if (file && file.type.startsWith('image/')) {
-      const avatarURL = URL.createObjectURL(file);
-      setAvatarUrl(avatarURL);
+      setLoading(true);
+      setError('');
+      try {
+        const formData = new FormData();
+        formData.append('image', file, file.name);
+
+        const response = await fetchIMG('/upload', 'POST', formData, token);
+        console.log(response);
+
+        if (response.status === 200) {
+          const avatarURL = response.data.fileUrl; // Assuming the API returns an array of image URLs
+          setAvatarUrl(avatarURL);
+          setAvatar(file);
+          Swal.fire({
+            icon: 'success',
+            title: 'Success',
+            text: 'Avatar đã được tải lên thành công',
+            timer: 3000
+          });
+        } else {
+          throw new Error(response.message || 'Upload failed');
+        }
+      } catch (err) {
+        console.error('Error:', err.message);
+        setError('Có lỗi xảy ra khi tải lên avatar, vui lòng thử lại');
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: err.message || 'Có lỗi xảy ra khi tải lên avatar, vui lòng thử lại',
+          timer: 3000
+        });
+      } finally {
+        setLoading(false);
+      }
     }
   };
 
@@ -34,38 +64,39 @@ const ProfileUpdate = () => {
     e.preventDefault();
     setLoading(true);
     setError('');
+    const updateData = {
+      userName: userName,
+      profileImage: avatarUrl
+    }
     try {
-      const token = localStorage.getItem('token')
-
-      const formData = new FormData();
-      if (avatar) {
-        formData.append('avatar', avatar, avatar.name)
-      }
-      formData.append('username', username)
-
-
-      const response = await fetchIMG('/user/update/profile', 'PUT', formData, token);
-
+      const getUpdatedUser = await fetchAPIWithoutBody('/user/me', 'GET', token);
+      const response = await fetchAPI(
+        `/user/profile/${getUpdatedUser.data.user._id}`, 
+        'PUT', 
+        updateData,
+        token,
+        { 'Content-Type': 'application/json' }
+      );
 
       if (response.status === 201) {
-        localStorage.setItem('user', JSON.stringify(response.data.user))
-        setLoading(false)
-        Swal.fire(
-          {
-            icon: 'success',
-            title: 'Success',
-            text: 'Thay đổi thông tin thành công',
-            timer: 3000
-          }
-        ).then(() => navigate(0))
+        const updatedUser = { ...user, ...response.data.user };
+        localStorage.setItem('user', JSON.stringify(updatedUser));
+        setUser(updatedUser);
+        setLoading(false);
+        Swal.fire({
+          icon: 'success',
+          title: 'Success',
+          text: 'Thay đổi thông tin thành công',
+          timer: 3000
+        }).then(() => navigate(0));
       } else {
         setError('Thay đổi không thành công');
-        setLoading(false)
+        setLoading(false);
       }
     } catch (err) {
-      console.log(err)
+      console.log(err);
       setError('Có lỗi xảy ra, vui lòng thử lại');
-      setLoading(false)
+      setLoading(false);
     }
   };
 
@@ -79,8 +110,8 @@ const ProfileUpdate = () => {
             type="text"
             id="name"
             name="name"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
+            value={userName}
+            onChange={(e) => setUserName(e.target.value)}
             required
           />
         </div>

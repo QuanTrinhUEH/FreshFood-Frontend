@@ -1,5 +1,5 @@
 // const API_URL = 'https://finalbeproject-backend.onrender.com'
-const API_URL = 'http://localhost:8090'
+const API_URL = 'http://localhost:8080'
 export const fetchAPI = async (endpoint, method, bodyData, token) => {
     const response = await fetch(API_URL + endpoint, {
         method,
@@ -11,10 +11,23 @@ export const fetchAPI = async (endpoint, method, bodyData, token) => {
         body: JSON.stringify(bodyData)
     })
     const data = await response.json();
-    console.log("data",data)
+    console.log("data", data)
+    return data
+}
+export const fetchAPIWithoutBody = async (endpoint, method, token) => {
+    const response = await fetch(API_URL + endpoint, {
+        method,
+        mode: "cors",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": token ? "Token " + token : ""
+        },
+    })
+    const data = await response.json();
     return data
 }
 export const fetchIMG = async (endpoint, method, bodyData, token) => {
+    console.log(bodyData);
     const response = await fetch(API_URL + endpoint, {
         method,
         mode: "cors",
