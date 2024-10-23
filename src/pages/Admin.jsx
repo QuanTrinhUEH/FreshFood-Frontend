@@ -6,6 +6,7 @@ import Create from './Create.jsx';
 import Management from './Management.jsx';
 import CustomerFeedback from './CustomerFeedback.jsx';
 import PromotionManagement from './PromotionManagement.jsx';
+import CreatePromotion from './CreatePromotion.jsx';
 
 function Admin() {
     return (
@@ -15,8 +16,9 @@ function Admin() {
             </div>
             <div className='admin-content'>
                 <Routes>
-                    <Route path='/' element={<Navigate to="/admin/create" />} />
-                    <Route path='/create' element={<Create />}></Route>
+                    <Route path='/' element={<Navigate to="/admin/createItem" />} />
+                    <Route path='/createItem' element={<Create />}></Route>
+                    <Route path='/createPromotion' element={<CreatePromotion />}></Route>
                     <Route path='/management' element={<Management />}></Route>
                     <Route path='/feedback' element={<CustomerFeedback />}></Route>
                     <Route path="/promotions" element={<PromotionManagement />} />

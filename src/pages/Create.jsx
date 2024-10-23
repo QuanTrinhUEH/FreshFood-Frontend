@@ -1,6 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { Form, Input, Button, Select, message, Tag } from 'antd';
-import { PlusOutlined } from '@ant-design/icons';
+import { Form, Input, Button, Select } from 'antd';
 import Swal from 'sweetalert2';
 import { fetchIMG, fetchAPI } from '../../fetchApi'
 import "../css/Create.scss";
@@ -86,7 +85,7 @@ const Create = () => {
       });
 
       const uploadResponse = await fetchIMG('/upload/multiple', 'POST', formData, localStorage.getItem('tokenInfo'));
-      
+
       if (uploadResponse.status !== 200) {
         throw new Error('Lỗi khi tải ảnh lên');
       }

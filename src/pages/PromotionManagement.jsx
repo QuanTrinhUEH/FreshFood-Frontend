@@ -85,23 +85,6 @@ function PromotionManagement() {
         }
     };
 
-    const handleAddPromotion = () => {
-        setShowAddForm(true);
-    };
-
-    const handleAddSuccess = (newPromotion) => {
-        setPromotions(prevPromotions => [newPromotion, ...prevPromotions]);
-        setShowAddForm(false);
-        Swal.fire({
-            icon: 'success',
-            title: 'Khuyến mãi đã được thêm thành công',
-            showConfirmButton: false,
-            timer: 1500
-        });
-    };
-
-    console.log("promotions", promotions)
-
     return (
         <div className="product-management content-container">
             <h1>Quản lý khuyến mãi</h1>
@@ -164,9 +147,6 @@ function PromotionManagement() {
                     <UpdatePromotionForm promotion={selectedPromotion} onClose={handleCloseFrame} />
                 </div>
             )}
-            <button onClick={handleAddPromotion}>
-                Thêm khuyến mãi mới
-            </button>
         </div>
     );
 }
