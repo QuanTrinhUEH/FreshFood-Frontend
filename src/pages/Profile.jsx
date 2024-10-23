@@ -1,10 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
 import Swal from 'sweetalert2';
 import '../css/ProfileUpdate.scss';
 import { useNavigate } from 'react-router-dom';
 import { fetchIMG } from '../../fetchApi.js';
-import { setUser } from '../store/slice/authSlice.js';
 
 const ProfileUpdate = () => {
   const navigate = useNavigate();

@@ -27,9 +27,9 @@ function App() {
   const [refreshToken, setRefreshToken] = useState(null);
 
   useEffect(() => {
-    const storedUser = localStorage.getItem('user');
-    const storedToken = localStorage.getItem('token');
-    const storedRefreshToken = localStorage.getItem('refreshToken');
+    const storedUser = localStorage.getItem('userInfo');
+    const storedToken = localStorage.getItem('tokenInfo');
+    const storedRefreshToken = localStorage.getItem('refreshTokenInfo');
     if (storedUser) setUser(JSON.parse(storedUser));
     if (storedToken) setToken(storedToken);
     if (storedRefreshToken) setRefreshToken(storedRefreshToken);
@@ -42,9 +42,9 @@ function App() {
         setUser(data.data.user);
         setToken(data.data.token);
         setRefreshToken(data.data.refreshToken);
-        localStorage.setItem('user', JSON.stringify(data.data.user));
-        localStorage.setItem('token', data.data.token);
-        localStorage.setItem('refreshToken', data.data.refreshToken);
+        localStorage.setItem('userInfo', JSON.stringify(data.data.user));
+        localStorage.setItem('tokenInfo', data.data.token);
+        localStorage.setItem('refreshTokenInfo', data.data.refreshToken);
       } else {
         clearAuth();
         navigate(0);
@@ -58,10 +58,10 @@ function App() {
     setUser(null);
     setToken(null);
     setRefreshToken(null);
-    localStorage.removeItem('user');
-    localStorage.removeItem('token');
-    localStorage.removeItem('refreshToken');
-    localStorage.removeItem('cart');
+    localStorage.removeItem('userInfo');
+    localStorage.removeItem('tokenInfo');
+    localStorage.removeItem('refreshTokenInfo');
+    localStorage.removeItem('cartInfo');
   };
 
   useEffect(() => {

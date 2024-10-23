@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import '../css/Checkout.scss'
+import { fetchAPI } from '../../fetchApi'
 
 const Checkout = () => {
   const navigate = useNavigate();
@@ -11,22 +12,19 @@ const Checkout = () => {
   const [total, setTotal] = useState(0);
 
   useEffect(() => {
-    // Lấy thông tin user từ localStorage
     const userInfo = localStorage.getItem('userInfo');
     if (userInfo) {
       const parsedUser = JSON.parse(userInfo);
       setUser(parsedUser);
-      setPhone(parsedUser.phone || ''); // Đặt số điện thoại mặc định từ thông tin user
+      setPhone(parsedUser.phone || '');
     } else {
-      navigate('/login'); // Chuyển hướng về trang đăng nhập nếu chưa đăng nhập
+      navigate('/login');
     }
 
-    // Lấy thông tin giỏ hàng từ localStorage
     const cartInfo = localStorage.getItem('cartInfo');
     if (cartInfo) {
       const parsedCart = JSON.parse(cartInfo);
       setCart(parsedCart);
-      // Tính tổng giá trị đơn hàng
       const cartTotal = parsedCart.reduce((sum, item) => sum + item.price, 0);
       setTotal(cartTotal);
     }
@@ -40,12 +38,35 @@ const Checkout = () => {
     setAddress(e.target.value);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Xử lý logic thanh toán ở đây
-    console.log('Đặt hàng với thông tin:', { phone, address, total, cart });
-    // Sau khi xử lý thanh toán thành công, có thể chuyển hướng người dùng đến trang xác nhận
-    // navigate('/order-confirmation');
+    
+    const orderData = {
+      items: cart.map(item => ({
+        itemId: item._id,
+        quantity: item.quantity
+      })),
+      totalAmount: total,
+      address: address,
+      phoneNumber: phone
+    };
+
+    try {
+      const response = await fetchAPI('/order/', 'POST', orderData);
+      if (response.status === 200) {
+        // Xóa giỏ hàng sau khi đặt hàng thành công
+        localStorage.removeItem('cartInfo');
+        // Chuyển hướng đến trang xác nhận đơn hàng
+        navigate('/order-confirmation', { state: { orderId: response.data.orderId } });
+      } else {
+        // Xử lý lỗi nếu có
+        console.error('Đặt hàng thất bại:', response.data);
+        alert('Đặt hàng thất bại. Vui lòng thử lại.');
+      }
+    } catch (error) {
+      console.error('Lỗi khi đặt hàng:', error);
+      alert('Có lỗi xảy ra. Vui lòng thử lại sau.');
+    }
   };
 
   const formatPrice = (price) => {
