@@ -23,14 +23,12 @@ const Login = () => {
         setError('');
 
         try {
-            console.log(phoneNumber, password)
             const response = await fetchAPI('/user/login', 'POST', {
                 phoneNumber,
                 password
             })
 
             if (response.status === 200) {
-                console.log("res", response)
                 localStorage.setItem('userInfo', JSON.stringify(response.data.user))
                 localStorage.setItem('tokenInfo', response.data.token)
                 localStorage.setItem('refreshTokenInfo', response.data.refreshToken)

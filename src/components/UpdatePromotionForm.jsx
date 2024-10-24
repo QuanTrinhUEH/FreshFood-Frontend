@@ -23,7 +23,6 @@ const UpdatePromotionForm = ({ promotion, onClose, onUpdateSuccess }) => {
             const response = await fetchAPIWithoutBody('/item/management?pageSize=100', 'GET', localStorage.getItem('tokenInfo'));
             if (response.success) {
                 setAllProducts(response.data.items);
-                console.log("response:", response);
             } else {
                 message.error('Không thể tải danh sách sản phẩm');
             }
@@ -32,7 +31,6 @@ const UpdatePromotionForm = ({ promotion, onClose, onUpdateSuccess }) => {
             message.error('Có lỗi xảy ra khi tải danh sách sản phẩm');
         }
     };
-    console.log("allProducts:", allProducts);
 
     const handleUpdate = async (values) => {
         setLoading(true);
@@ -45,11 +43,7 @@ const UpdatePromotionForm = ({ promotion, onClose, onUpdateSuccess }) => {
             };
             delete updateData.dateRange;
 
-            console.log("Update data:", updateData);
-
             const response = await fetchAPI(`/promotion/${promotion._id}`, 'PATCH', updateData, localStorage.getItem('tokenInfo'));
-
-            console.log("Response:", response);
 
             if (response.status === 200) {
                 message.success('Cập nhật khuyến mãi thành công');

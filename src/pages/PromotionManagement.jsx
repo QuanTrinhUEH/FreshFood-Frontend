@@ -32,7 +32,6 @@ function PromotionManagement() {
             }).toString();
 
             const response = await fetchAPIWithoutBody(`/promotion/?${queryParams}`, 'GET', localStorage.getItem('tokenInfo'));
-            console.log(response)
             if (response.success === true) {
                 setPromotions(response.data.promotions);
                 setTotalPages(response.data.totalPages);

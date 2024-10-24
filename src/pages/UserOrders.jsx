@@ -88,11 +88,6 @@ const UserOrders = () => {
       default: return status;
     }
   };
-  orders.map((order) => {
-    console.log("order",typeof order.items);
-    console.log("order",order.items);
-    console.log("order items",order.items.itemName);
-  })
 
   if (loading) {
     return <div className="loading">Đang tải...</div>;

@@ -32,7 +32,6 @@ function Management() {
             }).toString();
 
             const response = await fetchAPIWithoutBody(`/item/management?${queryParams}`, 'GET', localStorage.getItem('tokenInfo'));
-            console.log(response)
             if (response.success === true) {
                 setProducts(response.data.items);
                 setTotalPages(response.data.totalPages);
@@ -126,8 +125,6 @@ function Management() {
             });
         }
     };
-
-    console.log("products", products)
 
     return (
         <div className="product-management content-container">
