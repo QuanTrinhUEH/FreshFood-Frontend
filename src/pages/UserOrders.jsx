@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { fetchAPIWithoutBody } from '../../fetchApi';
+import { fetchAPIWithoutBody, fetchAPI } from '../../fetchApi';
 import dayjs from 'dayjs';
-import { Link } from 'react-router-dom';
 import "../css/UserOrders.scss";
+import Swal from 'sweetalert2';
 
 const UserOrders = () => {
   const [orders, setOrders] = useState([]);
@@ -24,6 +24,46 @@ const UserOrders = () => {
       console.error('Error fetching user orders:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleCancelOrder = async (orderId) => {
+    try {
+      const result = await Swal.fire({
+        title: 'Bạn có chắc chắn muốn hủy đơn hàng này?',
+        text: "Bạn không thể hoàn tác hành động này!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Đồng ý',
+        cancelButtonText: 'Hủy bỏ'
+      });
+
+      if (result.isConfirmed) {
+        const response = await fetchAPI(`/order/cancel/${orderId}`, 'PATCH', {}, localStorage.getItem('tokenInfo'));
+        if (response.status === 200) {
+          Swal.fire(
+            'Đã hủy!',
+            'Đơn hàng của bạn đã được hủy.',
+            'success'
+          );
+          fetchUserOrders(); // Refresh the orders list
+        } else {
+          Swal.fire(
+            'Lỗi!',
+            'Không thể hủy đơn hàng. Vui lòng thử lại sau.',
+            'error'
+          );
+        }
+      }
+    } catch (error) {
+      console.error('Error cancelling order:', error);
+      Swal.fire(
+        'Lỗi!',
+        'Đã xảy ra lỗi khi hủy đơn hàng.',
+        'error'
+      );
     }
   };
 
@@ -87,6 +127,11 @@ const UserOrders = () => {
                   ))}
                 </ul>
               </div>
+              {order.status === 'pending' && (
+                <button className="cancel-order-btn" onClick={() => handleCancelOrder(order._id)}>
+                  Hủy đơn hàng
+                </button>
+              )}
             </div>
           ))}
         </div>
