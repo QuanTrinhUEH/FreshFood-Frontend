@@ -199,7 +199,7 @@ const Home = () => {
               {/* TOP LEFT CONTENT */}
               <div className="body-middle-top-left-content">
                 <div className="body-middle-top-left-content-discount">
-                  <h3 style={{ fontWeight: "600", borderBottom: ".5px solid #e6e6e6", paddingBottom: ".5rem" }}>SẢN PHẨM KHUYẾN MẠI</h3>
+                  <h3 style={{ fontWeight: "600", borderBottom: ".5px solid #e6e6e6", paddingBottom: ".5rem" }}>SẢN PHẨM KHUYẾN MÃI</h3>
                   {/* CAROUSEL O DAY */}
                   <div className="body-middle-slider">
                     <div>

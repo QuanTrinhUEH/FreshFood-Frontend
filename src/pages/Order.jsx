@@ -1,16 +1,17 @@
 import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import '../css/Checkout.scss'
-import { fetchAPI } from '../../fetchApi'
+import '../css/Order.scss'
+import { fetchAPI, fetchAPIWithoutBody } from '../../fetchApi'
 import Swal from 'sweetalert2'
 
-const Checkout = () => {
+const Order = () => {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [cart, setCart] = useState([]);
   const [phone, setPhone] = useState('');
   const [address, setAddress] = useState('');
   const [total, setTotal] = useState(0);
+  const [availableQuantity, setAvailableQuantity] = useState(0);
 
   useEffect(() => {
     const userInfo = localStorage.getItem('userInfo');
@@ -42,8 +43,23 @@ const Checkout = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    // Check if all items in the cart are available in sufficient quantity
-    const insufficientItems = cart.filter(item => item.quantity > item.availableQuantity);
+    // Kiểm tra số lượng tồn kho
+    const insufficientItems = [];
+    for (const item of cart) {
+      try {
+        console.log(item)
+        const response = await fetchAPIWithoutBody(`/item/${item._id}`, 'GET');
+        if (response.status === 200) {
+          const availableValue = response.data.item.quantity;
+          setAvailableQuantity(availableValue);
+          if (item.quantity > availableValue) {
+            insufficientItems.push({...item, availableValue});
+          }
+        }
+      } catch (error) {
+        console.error(`Lỗi khi kiểm tra tồn kho cho sản phẩm ${item.itemName}:`, error);
+      }
+    }
     
     if (insufficientItems.length > 0) {
       const itemNames = insufficientItems.map(item => item.itemName).join(', ');
@@ -69,17 +85,18 @@ const Checkout = () => {
       const tokenInfo = localStorage.getItem('tokenInfo');
       const response = await fetchAPI('/order/', 'POST', orderData, tokenInfo);
       if (response.status === 201) {
+        // Cập nhật số lượng tồn kho
+        await updateInventory(cart);
+
         // Xóa giỏ hàng sau khi đặt hàng thành công
         localStorage.removeItem('cartInfo');
 
-        // Hiển thị thông báo đặt hàng thành công
         Swal.fire({
           icon: 'success',
           title: 'Đặt hàng thành công!',
           confirmButtonText: 'OK'
         }).then((result) => {
           if (result.isConfirmed) {
-            // Chuyển hướng về trang chủ hoặc trang giỏ hàng
             navigate('/');
           }
         });
@@ -107,8 +124,37 @@ const Checkout = () => {
     return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(price);
   };
 
+  const updateInventory = async (items) => {
+    const tokenInfo = localStorage.getItem('tokenInfo');
+    for (const item of items) {
+      try {
+        // Lấy số lượng hiện tại của sản phẩm
+        const response = await fetchAPIWithoutBody(`/item/${item._id}`, 'GET');
+        if (response.status !== 200) {
+          console.error(`Không thể lấy thông tin cho sản phẩm ${item.itemName}`);
+          continue;
+        }
+
+        const availableQuantity = response.data.item.quantity;
+        if (typeof availableQuantity !== 'number' || availableQuantity < item.quantity) {
+          console.error(`Số lượng không hợp lệ cho sản phẩm ${item.itemName}`);
+          continue;
+        }
+
+        const newQuantity = availableQuantity - item.quantity;
+        await fetchAPI(`/item/${item._id}`, 'PATCH', {
+          quantity: newQuantity
+        }, tokenInfo);
+
+        console.log(`Đã cập nhật thành công số lượng cho ${item.itemName}: ${newQuantity}`);
+      } catch (error) {
+        console.error(`Lỗi khi cập nhật tồn kho cho sản phẩm ${item.itemName}:`, error);
+      }
+    }
+  };
+
   return (
-    <div className="checkout-page">
+    <div className="order-page">
       <div className="container">
         <h1>Thanh Toán</h1>
         <form onSubmit={handleSubmit}>
@@ -144,11 +190,11 @@ const Checkout = () => {
               <strong>{formatPrice(total)}</strong>
             </div>
           </div>
-          <button type="submit" className="checkout-btn">Đặt hàng</button>
+          <button type="submit" className="order-btn">Đặt hàng</button>
         </form>
       </div>
     </div>
   )
 }
 
-export default Checkout
+export default Order

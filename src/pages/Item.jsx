@@ -36,7 +36,8 @@ const Item = () => {
     fetchAPI(`/item/${params.id}`, 'GET').then(e => {
       if (e.status == 200) {
         setData(e.data.item)
-        setAvailableQuantity(e.data.item.quantity) // Set the available quantity
+        setAvailableQuantity(e.data.item.quantity)
+        console.log(availableQuantity)
         fetchAPI(`/item/foodType/${e.data.item.foodType}`)
           .then(e => {
             setAds(e.data.items.slice(0, 4))
@@ -221,7 +222,7 @@ const Item = () => {
                 </div>
                 <div className="stock">
                   <h3 >Tồn kho</h3>
-                  <p className='type-text stock-text'>{availableQuantity}32</p>
+                  <p className='type-text stock-text'>{availableQuantity}</p>
                 </div>
               </div>
             </form>
