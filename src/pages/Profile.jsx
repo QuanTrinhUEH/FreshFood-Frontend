@@ -30,8 +30,6 @@ const ProfileUpdate = () => {
         formData.append('image', file, file.name);
 
         const response = await fetchIMG('/upload', 'POST', formData, token);
-        console.log(response);
-
         if (response.status === 200) {
           const avatarURL = response.data.fileUrl; // Assuming the API returns an array of image URLs
           setAvatarUrl(avatarURL);

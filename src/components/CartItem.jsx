@@ -3,9 +3,7 @@ import '../css/Cart.scss';
 import { message } from 'antd';
 
 const CartItem = ({ item, onDelete, onQuantityChange }) => {
-    if (!item) return null; // Add this check to prevent errors when item is undefined
-
-    console.log(item);
+    if (!item) return null;
     const [quantity, setQuantity] = useState(item.quantity);
     const [totalPrice, setTotalPrice] = useState(item.price);
 

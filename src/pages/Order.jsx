@@ -47,7 +47,6 @@ const Order = () => {
     const insufficientItems = [];
     for (const item of cart) {
       try {
-        console.log(item)
         const response = await fetchAPIWithoutBody(`/item/${item._id}`, 'GET');
         if (response.status === 200) {
           const availableValue = response.data.item.quantity;
@@ -146,7 +145,6 @@ const Order = () => {
           quantity: newQuantity
         }, tokenInfo);
 
-        console.log(`Đã cập nhật thành công số lượng cho ${item.itemName}: ${newQuantity}`);
       } catch (error) {
         console.error(`Lỗi khi cập nhật tồn kho cho sản phẩm ${item.itemName}:`, error);
       }

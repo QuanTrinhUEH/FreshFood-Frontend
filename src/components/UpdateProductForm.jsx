@@ -29,11 +29,7 @@ const UpdateProductForm = ({ product, onClose, onUpdateSuccess }) => {
                 images: fileList.map(file => file.url || file.originFileObj)
             };
 
-            console.log("Update data:", updateData);
-
             const response = await fetchAPI(`/item/${product._id}`, 'PATCH', updateData, localStorage.getItem('tokenInfo'));
-
-            console.log("Response:", response);
 
             if (response.status === 200) {
                 message.success('Cập nhật sản phẩm thành công');
