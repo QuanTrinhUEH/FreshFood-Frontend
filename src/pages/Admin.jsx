@@ -7,8 +7,7 @@ import Management from './Management.jsx';
 import CustomerFeedback from './CustomerFeedback.jsx';
 import PromotionManagement from './PromotionManagement.jsx';
 import CreatePromotion from './CreatePromotion.jsx';
-import OrderManagement from './OrderManagement.jsx';
-
+import OrderManagenent from './OrderManagenent.jsx';
 function Admin() {
     return (
         <div className='admin-container'>
@@ -23,6 +22,7 @@ function Admin() {
                     <Route path='/management' element={<Management />}></Route>
                     <Route path="/promotions" element={<PromotionManagement />} />
                     <Route path="/orderManagement" element={<OrderManagement />} />
+                    <Route path="/orderManagenent" element={<OrderManagenent />} />
                     <Route path='/feedback' element={<CustomerFeedback />}/>
                 </Routes>
             </div>

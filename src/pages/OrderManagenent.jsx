@@ -77,7 +77,6 @@ const OrderManagement = () => {
     };
 
     const OrderItem = ({ order }) => (
-        console.log("order", order),
         <tr>
             <td>{order._id}</td>
             <td>{order.user.userName}</td>

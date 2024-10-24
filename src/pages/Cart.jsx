@@ -92,7 +92,7 @@ const Cart = () => {
             </div>
             <div className="end-btn">
               <button onClick={clearCart} className='cart-end-btn'>Xóa tất cả</button>
-              <button onClick={() => navigate('/checkout')} className='cart-end-btn'>Thanh toán</button>
+              <button onClick={() => navigate('/order')} className='cart-end-btn'>Thanh toán</button>
             </div>
           </>
         )}

@@ -76,6 +76,35 @@
         background-color: #17a669;
       }
     }
+
+    .cancel-order-btn {
+      display: inline-block;
+      margin-top: 10px;
+      padding: 8px 15px;
+      background-color: #ff4d4d;
+      color: white;
+      text-decoration: none;
+      border-radius: 4px;
+      border: none;
+      cursor: pointer;
+      font-size: 0.9em;
+      transition: background-color 0.3s, transform 0.1s;
+
+      &:hover {
+        background-color: #ff3333;
+      }
+
+      &:active {
+        transform: scale(0.98);
+      }
+    }
+
+    .order-actions {
+      display: flex;
+      justify-content: flex-start;
+      gap: 10px;
+      margin-top: 10px;
+    }
   }
 
   .no-orders {

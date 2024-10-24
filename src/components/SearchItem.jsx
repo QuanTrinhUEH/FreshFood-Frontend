@@ -1,37 +1,33 @@
 import React from 'react'
-import { FaShoppingCart, FaStar } from 'react-icons/fa'
+import { IoMdCart } from 'react-icons/io'
 import { Link } from 'react-router-dom'
+// import '../css/SearchItem.scss'
 
 const SearchItem = ({ props }) => {
-  console.log(props)
-
   const formattedNumber = (num) => {
+    if (num === undefined || num === null) return '0';
     return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
   }
 
-  // START TEST CODE
-  // END TEST CODE
-
-
+  const discountedPrice = props.promotion
+    ? props.price * (1 - props.promotion.discountPercentage / 100)
+    : props.price;
 
   return (
-    <Link to={`/product/${props.ID}`} className='redirect-btn'>
-      <div className='item'>
-        <div className="discount-percentage">
-          <p>-{Math.ceil(props.discount / props.price)}%</p>
-          <FaStar />
-        </div>
-        <div className="top-img">
-          <img src={props.images[0]} alt="" />
-        </div>
-        <div className="price-tags">
-          <p className='name-tag'>{props.itemName}</p>
-          <h3 className='price-tag'><i>Giá:&nbsp;</i>{formattedNumber(props.price)}₫</h3>
-          <del className='discount-tag'><i>Giá: {formattedNumber(props.discount)}₫</i></del>
-          <button>
-          <FaShoppingCart /><p>Mua hàng</p>
-          </button>
-        </div>
+    <Link to={`/product/${props._id}`} className='search-item'>
+      {props.promotion && (
+        <div className="discount-badge">-{Math.round(props.promotion.discountPercentage)}%</div>
+      )}
+      <div className="search-item-img">
+        <img src={props.images[0]} alt={props.itemName} />
+      </div>
+      <div className="search-item-info">
+        <h3>{props.itemName}</h3>
+        <p className="discounted-price">{formattedNumber(Math.round(discountedPrice))}đ</p>
+        {props.promotion && (
+          <p className="original-price">{formattedNumber(props.price)}đ</p>
+        )}
+        <button className="buy-button"><IoMdCart /> Mua hàng</button>
       </div>
     </Link>
   )

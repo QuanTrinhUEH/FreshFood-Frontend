@@ -17,7 +17,7 @@ import Cart from './pages/Cart.jsx'
 import Account from './pages/Account.jsx'
 import { refreshTokenResetter } from '../fetchApi.js'
 import ProductPage from './pages/ProductPage.jsx'
-import Checkout from './pages/Checkout.jsx'
+import Order from './pages/Order.jsx'
 import UserOrders from './pages/UserOrders';
 
 function App() {
@@ -100,7 +100,7 @@ function App() {
         <Route path='/search' element={<Search />} />
         <Route path='/cart' element={<Cart />} />
         <Route path='/about' element={<About />} />
-        <Route path='/checkout' element={<Checkout />} />
+        <Route path='/order' element={<Order />} />
         <Route path="/myOrders" element={<UserOrders />} />
         <Route path='*' element={<NotFound />} />
       </Routes>

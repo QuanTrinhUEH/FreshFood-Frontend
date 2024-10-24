@@ -19,6 +19,7 @@ const Item = () => {
   const [img, setImg] = useState();
   const [totalPrice, setTotalPrice] = useState(0);
   const [showNotification, setShowNotification] = useState(false);
+  const [availableQuantity, setAvailableQuantity] = useState(0);
 
   useEffect(() => {
     const storedUser = localStorage.getItem('userInfo');
@@ -35,6 +36,8 @@ const Item = () => {
     fetchAPI(`/item/${params.id}`, 'GET').then(e => {
       if (e.status == 200) {
         setData(e.data.item)
+        setAvailableQuantity(e.data.item.quantity)
+        console.log(availableQuantity)
         fetchAPI(`/item/foodType/${e.data.item.foodType}`)
           .then(e => {
             setAds(e.data.items.slice(0, 4))
@@ -51,6 +54,20 @@ const Item = () => {
       clearTimeout(timeout)
     }
   }, [])
+  const getFoodTypeInVietnamese = (foodType) => {
+    switch (foodType.toLowerCase()) {
+      case 'meats':
+        return 'Thịt sạch';
+      case 'vegetables':
+        return 'Rau sạch';
+      case 'seafood':
+        return 'Hải sản sạch';
+      case 'fruits':
+        return 'Hoa quả sạch';
+      default:
+        return foodType;
+    }
+  };
 
   const formattedNumber = (num) => {
     return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
@@ -90,7 +107,7 @@ const Item = () => {
 
     let cart = JSON.parse(localStorage.getItem('cartInfo')) || [];
     const existingItemIndex = cart.findIndex(item => item._id === saveItem._id);
-    
+
     if (existingItemIndex !== -1) {
       cart[existingItemIndex].quantity += quantity;
       cart[existingItemIndex].price += saveItem.price;
@@ -173,7 +190,7 @@ const Item = () => {
                 <div className="cart-icon"><FaCartPlus /></div>
                 <div className="cart-text">
                   <div className="top-text">Giỏ hàng</div>
-                  <Link to={'/cart'} className="bottom-text">0 Sản phẩm</Link>
+                  <Link to={'/cart'} className="bottom-text">Sản phẩm</Link>
                 </div>
               </div>
             </div>
@@ -181,7 +198,14 @@ const Item = () => {
               <div className="left-buy">
                 <div className="quantity">
                   <h3>Số lượng</h3>
-                  <input type="number" value={quantity} min={1} name='quantity' onChange={(e) => setQuantity(parseInt(e.target.value))} />
+                  <input
+                    type="number"
+                    value={quantity}
+                    min={1}
+                    max={availableQuantity}
+                    name='quantity'
+                    onChange={(e) => setQuantity(Math.min(parseInt(e.target.value), availableQuantity))}
+                  />
                 </div>
                 <div className="total-price">
                   <h3>Tổng tiền</h3>
@@ -194,7 +218,11 @@ const Item = () => {
               <div className="types">
                 <div className="type">
                   <h3 className='type-title'>Phân loại</h3>
-                  <p className='type-text'>{data.foodType}</p>
+                  <p className='type-text'>{getFoodTypeInVietnamese(data.foodType)}</p>
+                </div>
+                <div className="stock">
+                  <h3 >Tồn kho</h3>
+                  <p className='type-text stock-text'>{availableQuantity}</p>
                 </div>
               </div>
             </form>

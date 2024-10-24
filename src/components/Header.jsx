@@ -14,7 +14,7 @@ const Header = () => {
 
   useEffect(() => {
     const storedUser = localStorage.getItem('userInfo');
-    const storedCart = localStorage.getItem('cart');
+    const storedCart = localStorage.getItem('cartInfo');
     if (storedUser) {
       setUser(JSON.parse(storedUser));
     }
@@ -24,7 +24,7 @@ const Header = () => {
 
     // Thêm event listener để lắng nghe sự thay đổi của giỏ hàng
     const handleCartUpdate = () => {
-      const updatedCart = JSON.parse(localStorage.getItem('cart')) || [];
+      const updatedCart = JSON.parse(localStorage.getItem('cartInfo')) || [];
       setCart(updatedCart);
     };
 
@@ -47,12 +47,12 @@ const Header = () => {
     }
     else {
       setVerify(false)
-      // navigate(`/search?q=${searchInput}`)
+      navigate(`/search?q=${searchInput}`)
     }
   }
   const handleLogOut = () => {
     localStorage.removeItem('userInfo');
-    localStorage.removeItem('cart');
+    localStorage.removeItem('cartInfo');
     setUser(null);
     setCart([]);
     navigate('/');
@@ -96,12 +96,13 @@ const Header = () => {
                     </div>
                   </div>
                 </div>
-                <Link to={'/cart'}>
-                  <div className="header-top-left-cart">
-                    <IoMdCart />
-                    <p>Giỏ hàng</p>
-                  </div>
-                </Link>
+                {user.role === 'user' &&
+                  <Link to={'/cart'}>
+                    <div className="header-top-left-cart">
+                      <IoMdCart />
+                      <p>Giỏ hàng</p>
+                    </div>
+                  </Link>}
               </div>
           }
           <div className="header-top-right">
