@@ -5,32 +5,43 @@ import { LiaLongArrowAltLeftSolid, LiaLongArrowAltRightSolid } from 'react-icons
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { FaBasketShopping, FaCartShopping } from 'react-icons/fa6';
 import RecommendItem from '../components/RecommendItem';
-import Type from '../components/Type';
 import { fetchAPI } from '../../fetchApi';
 import { PuffLoader } from 'react-spinners';
 
 const Item = () => {
   const params = new useParams();
-  const [loading, setLoading] = useState(true)
   const navigate = useNavigate();
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true)
   const [data, setData] = useState();
-  const [ads, setAds] = useState();
+  const [ads, setAds] = useState([]);
   const [quantity, setQuantity] = useState(1);
   const [img, setImg] = useState();
-  const [itemList, setItemList] = useState([]);
+  const [totalPrice, setTotalPrice] = useState(0);
+  const [showNotification, setShowNotification] = useState(false);
+  const [availableQuantity, setAvailableQuantity] = useState(0);
 
+  useEffect(() => {
+    const storedUser = localStorage.getItem('userInfo');
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
+    }
+  }, []);
 
   const handleImage = (e) => {
     setImg(e.target.src)
   }
 
   useEffect(() => {
-    fetchAPI(`/item/get-item/${params.id}`, 'GET').then(e => {
+    fetchAPI(`/item/${params.id}`, 'GET').then(e => {
       if (e.status == 200) {
         setData(e.data.item)
-        setItemList(e.data.item.variants.map(type => ({ name: type.name, type: type.type[0] })))
-        fetchAPI(`/item/get-type/${e.data.item.food_type}/1`)
-          .then(e => setAds(e.data.items.slice(0, 4)))
+        setAvailableQuantity(e.data.item.quantity)
+        console.log(availableQuantity)
+        fetchAPI(`/item/foodType/${e.data.item.foodType}`)
+          .then(e => {
+            setAds(e.data.items.slice(0, 4))
+          })
       }
       else {
         setData(false)
@@ -43,81 +54,104 @@ const Item = () => {
       clearTimeout(timeout)
     }
   }, [])
+  const getFoodTypeInVietnamese = (foodType) => {
+    switch (foodType.toLowerCase()) {
+      case 'meats':
+        return 'Thịt sạch';
+      case 'vegetables':
+        return 'Rau sạch';
+      case 'seafood':
+        return 'Hải sản sạch';
+      case 'fruits':
+        return 'Hoa quả sạch';
+      default:
+        return foodType;
+    }
+  };
 
   const formattedNumber = (num) => {
     return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
   }
+  const discountedPrice = data && data.promotion
+    ? data.price * (1 - data.promotion.discountPercentage / 100)
+    : data ? data.price : 0;
 
-
-
-  // SUBMIT
-
-  const handleType = (name, type) => {
-    const index = itemList.findIndex(item => item.name === name);
-    if (index !== -1) {
-      itemList[index].type = type;
-      setItemList([...itemList]); // spread operator to trigger re-render
-    } else {
-      setItemList([])
+  useEffect(() => {
+    if (data) {
+      const price = data.promotion
+        ? data.price * (1 - data.promotion.discountPercentage / 100)
+        : data.price;
+      setTotalPrice(price * quantity);
     }
-  };
-  const price = 10000;
+  }, [data, quantity]);
 
   const handleBuy = (e) => {
     e.preventDefault();
-    if (localStorage.getItem('user') == null) {
-      navigate('/signin')
+
+    if (!user) {
+      navigate('/login');
+      return;
     }
-    else {
-      const saveItem = {
-        itemName: data.itemName,
-        image: data.images[0],
-        quantity,
-        originalPrice: data.price,
-        price: price * quantity,
-        type: [
-          ...itemList
-        ],
-        ID: data.ID
-      }
-      const existingCart = JSON.parse(localStorage.getItem('cart')) || []
-      const existingItemIndex = existingCart.findIndex(e => e.itemName == saveItem.itemName)
-      if (existingItemIndex !== -1) {
-        existingCart[existingItemIndex] = saveItem
-        localStorage.setItem('cart', JSON.stringify(existingCart));
-      }
-      else {
-        const updatedCart = [...existingCart, saveItem];
-        localStorage.setItem('cart', JSON.stringify(updatedCart));
-      }
-      navigate('/cart')
+
+    const saveItem = {
+      _id: data._id,
+      itemName: data.itemName,
+      originalPrice: data.price,
+      discountedPrice: data.promotion ? discountedPrice : data.price,
+      variants: data.variants,
+      image: data.images[0],
+      quantity,
+      price: (data.promotion ? discountedPrice : data.price) * quantity,
+      type: data.foodType,
+    };
+
+    let cart = JSON.parse(localStorage.getItem('cartInfo')) || [];
+    const existingItemIndex = cart.findIndex(item => item._id === saveItem._id);
+
+    if (existingItemIndex !== -1) {
+      cart[existingItemIndex].quantity += quantity;
+      cart[existingItemIndex].price += saveItem.price;
+    } else {
+      cart.push(saveItem);
     }
-  }
 
-  // Chuyển [b] thành <b> và [/b] thành </b>, chuyển [url] => <a>, [img] => <img>
-  const convertTagsToHtml = (text) => {
-    const regexURL = /\[url=(.*?)\](.*?)\[\/url\]/g;
-    const regexIMG = /\[img=(.*?)\]/g;
+    localStorage.setItem('cartInfo', JSON.stringify(cart));
+    setShowNotification(true);
 
-    return text
-      .replace(/\[b\]/g, "<b>")
-      .replace(/\[\/b\]/g, "</b>")
-      .replace(/\[i\]/g, "<i>")
-      .replace(/\[\/i\]/g, "</i>")
-      .replace(/\[u\]/g, "<u>")
-      .replace(/\[\/u\]/g, "</u>")
-      .replace(regexURL, "<a href='$1'>$2</a>")
-      .replace(regexIMG, "<img src='$1' style='margin-left: auto;display: block;transform: translateX(-50%);max-width: 480px'>");
-  }
+    // Thêm dòng này để thông báo giỏ hàng đã thay đổi
+    window.dispatchEvent(new Event('cartUpdated'));
+  };
 
+  useEffect(() => {
+    if (showNotification) {
+      const timer = setTimeout(() => {
+        setShowNotification(false);
+      }, 3000); // Hide notification after 3 seconds
 
-  return loading ? (<div style={{
-    margin: "120px 0",
-    marginLeft: "50%",
-  }}>
-    <PuffLoader color="#1dc483" />
-  </div>) : !data ? navigate('/not-found') : (
+      return () => clearTimeout(timer);
+    }
+  }, [showNotification]);
+
+  const handleRecommendationClick = (itemId) => {
+    window.location.href = `/product/${itemId}`;
+  };
+
+  return loading ? (
+    <div style={{
+      margin: "120px 0",
+      marginLeft: "50%",
+    }}>
+      <PuffLoader color="#1dc483" />
+    </div>
+  ) : !data ? (
+    navigate('/not-found')
+  ) : (
     <>
+      {showNotification && (
+        <div className="notification">
+          Sản phẩm đã được thêm vào giỏ hàng thành công!
+        </div>
+      )}
       <div className="top-item">
         <div className="container">
           <div className="top-item-col1">
@@ -132,15 +166,13 @@ const Item = () => {
             <h1>{data.itemName}</h1>
             <div className="prices">
               <div className="price">
-                <h1>{formattedNumber(data.price)}₫</h1>
+                <h1>{formattedNumber(Math.round(discountedPrice))}đ</h1>
               </div>
-              <div className="discount">
-                <del>
-                  <i>
-                    {formattedNumber(data.discount)}₫
-                  </i>
-                </del>
-              </div>
+              {data.promotion && (
+                <div className="discount">
+                  <del><i>Giá gốc: {formattedNumber(data.price)}đ</i></del>
+                </div>
+              )}
             </div>
             <div className="method">
               <div className="tel">
@@ -158,7 +190,7 @@ const Item = () => {
                 <div className="cart-icon"><FaCartPlus /></div>
                 <div className="cart-text">
                   <div className="top-text">Giỏ hàng</div>
-                  <Link to={'/cart'} className="bottom-text">0 Sản phẩm</Link>
+                  <Link to={'/cart'} className="bottom-text">Sản phẩm</Link>
                 </div>
               </div>
             </div>
@@ -166,16 +198,32 @@ const Item = () => {
               <div className="left-buy">
                 <div className="quantity">
                   <h3>Số lượng</h3>
-                  <input type="number" value={quantity} min={1} name='quantity' onChange={(e) => setQuantity(parseInt(e.target.value))} />
+                  <input
+                    type="number"
+                    value={quantity}
+                    min={1}
+                    max={availableQuantity}
+                    name='quantity'
+                    onChange={(e) => setQuantity(Math.min(parseInt(e.target.value), availableQuantity))}
+                  />
+                </div>
+                <div className="total-price">
+                  <h3>Tổng tiền</h3>
+                  <p>{formattedNumber(Math.round(totalPrice))}đ</p>
                 </div>
                 <div className="buy-btn">
-                  <button type="submit" onClick={handleBuy} ><FaCartShopping /><p>Mua hàng</p></button>
+                  <button type="submit" onClick={handleBuy}><FaCartShopping /><p>Mua hàng</p></button>
                 </div>
               </div>
               <div className="types">
-                {data.variants.map((e, i) => (
-                  <Type props={e} key={i} onChange={handleType} />
-                ))}
+                <div className="type">
+                  <h3 className='type-title'>Phân loại</h3>
+                  <p className='type-text'>{getFoodTypeInVietnamese(data.foodType)}</p>
+                </div>
+                <div className="stock">
+                  <h3 >Tồn kho</h3>
+                  <p className='type-text stock-text'>{availableQuantity}</p>
+                </div>
               </div>
             </form>
           </div>
@@ -184,11 +232,9 @@ const Item = () => {
       <div className="bottom-item">
         <div className="container">
           <div className="bottom-left">
-            <h3>ĐẶC ĐIỂM NỔI BẬT</h3>
+            <h3>LỢI ÍCH CỦA THỰC PHẨM</h3>
             <div className="st-border"></div>
-            <p style={{ whiteSpace: "pre-line" }} dangerouslySetInnerHTML={{
-              __html: convertTagsToHtml(data.description)
-            }}></p>
+            <p>{data.description}</p>
             <div className="st-border"></div>
           </div>
           <div className="bottom-right">
@@ -209,13 +255,23 @@ const Item = () => {
             <div className="recommendations">
               <h4 className='highlighted'>SẢN PHẨM LIÊN QUAN</h4>
               <ul>
-                {ads.map((e, i) => (
-                  <li key={i}>
-                    <Link to={`/product/${e.ID}`}>
-                      <RecommendItem props={e} />
-                    </Link>
-                  </li>
-                ))}
+                {ads.length > 0 ? (
+                  ads.map((item, i) => (
+                    <li key={i}>
+                      <Link
+                        to={`/product/${item._id}`}
+                        onClick={(e) => {
+                          e.preventDefault(); // Ngăn chặn hành vi mặc định của Link
+                          handleRecommendationClick(item._id);
+                        }}
+                      >
+                        <RecommendItem props={item} />
+                      </Link>
+                    </li>
+                  ))
+                ) : (
+                  <p>Không có sản phẩm liên quan</p>
+                )}
               </ul>
             </div>
           </div>

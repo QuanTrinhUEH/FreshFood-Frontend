@@ -5,7 +5,7 @@ import '../css/Search.scss'
 import { Pagination } from '@mui/material';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import SearchItem from '../components/SearchItem';
-import { fetchAPI } from '../../fetchApi';
+import { fetchAPIWithoutBody } from '../../fetchApi';
 
 const theme = createTheme({
   palette: {
@@ -17,71 +17,63 @@ const theme = createTheme({
 });
 
 const Search = () => {
-
-
-  const [param] = new useSearchParams();
+  const [param] = useSearchParams();
   const query = param.get("q");
-
-
-
-  const [loading, setLoading] = useState(false)
-  const [data, setData] = useState()
+  const [loading, setLoading] = useState(true);
+  const [data, setData] = useState([]);
+  const [page, setPage] = useState(1);
+  const itemsPerPage = 8;
 
   useEffect(() => {
-    setLoading(true)
-    fetchAPI(`/item/search-item/${query}`, 'GET').then(e => {
-      console.log(e)
-      if (e.status === 200) {
-        let finalArray = []
-
-        for (let i = 0; i < e.data.items.length; i += 8) {
-          finalArray.push(e.data.items.slice(i, i + 8));
-        }
-
-        setData(finalArray)
+    setLoading(true);
+    fetchAPIWithoutBody(`/item/?search=${query}`, 'GET').then(e => {
+      if (e.success) {
+        setData(e.data.items);
+      } else {
+        setData([]);
       }
-      else if (e.status === 404) {
-        setData(false)
-      }
-      else {
-        console.log(e)
-      }
-    })
-    setLoading(false)
-  }, [query])
+      setLoading(false);
+    });
+  }, [query]);
 
+  const handlePageChange = (event, value) => {
+    setPage(value);
+  };
 
-
-  // PAGINATION
-  const [page, setPage] = useState(1)
-  const handlePageChange = (e, i) => {
-    setPage(i)
-  }
-
-
-
+  const paginatedData = data.slice((page - 1) * itemsPerPage, page * itemsPerPage);
 
   return (
-    // array length === 0
-    loading ? (<>
-      <PuffLoader color='#1dc483' className='loader' />
-    </>) : !data ? (<div style={{ margin: '100px 0 200px 50%', transform: "translateX(-20%)" }}>
-      <h1>
-        Không tìm thấy kết quả
-      </h1>
-    </div>) : (<div className='search-container'>
-      <div className="results">
-        {data[page - 1].map((e, i) => (
-          <SearchItem key={i} props={e} />
-        ))}
-      </div>
-      <div className="pagination">
-        <ThemeProvider theme={theme}>
-          <Pagination count={Math.ceil(data.length / 8)} color='primary' showFirstButton showLastButton onChange={handlePageChange} />
-        </ThemeProvider>
-      </div>
-    </div>)
-  )
-}
+    <div className='search-container'>
+      <h1 className="search-title">Tìm kiếm với từ khóa: {query}</h1>
+      {loading ? (
+        <PuffLoader color='#1dc483' className='loader' />
+      ) : data.length === 0 ? (
+        <div className="no-results">
+          <h2>Không tìm thấy kết quả</h2>
+        </div>
+      ) : (
+        <>
+          <div className="results">
+            {paginatedData.map((item, index) => (
+              <SearchItem key={index} props={item} />
+            ))}
+          </div>
+          <div className="pagination">
+            <ThemeProvider theme={theme}>
+              <Pagination 
+                count={Math.ceil(data.length / itemsPerPage)} 
+                page={page} 
+                onChange={handlePageChange} 
+                color="primary" 
+                showFirstButton 
+                showLastButton
+              />
+            </ThemeProvider>
+          </div>
+        </>
+      )}
+    </div>
+  );
+};
 
-export default Search
+export default Search;

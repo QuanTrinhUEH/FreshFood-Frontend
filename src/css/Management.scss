@@ -1,9 +1,14 @@
 .product-management {
     width: 80%;
-    padding: 20px;
+    padding: 50px 20px;
     background: #fff;
     border-radius: 10px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+
+    h1 {
+        margin-bottom: 20px;
+        text-align: center;
+    }
 
     .search-bar {
         display: flex;
@@ -34,7 +39,29 @@
         }
     }
 
+    .filter-options {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 20px;
+
+        select {
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            background-color: #fff;
+            cursor: pointer;
+
+            &:focus {
+                outline: none;
+                border-color: #1DC483;
+            }
+        }
+    }
+
     .product-list {
+        margin-bottom: 20px;
+
         table {
             width: 100%;
             border-collapse: collapse;
@@ -51,6 +78,13 @@
             }
 
             td {
+                &:first-child {
+                    max-width: 200px;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    white-space: nowrap;
+                }
+
                 img {
                     max-width: 50px;
                     height: auto;
@@ -61,18 +95,16 @@
             .action-buttons {
                 display: flex;
                 justify-content: space-between;
-                gap: 10px;
                 align-items: center;
-                padding: 19px 0 !important;
+                gap: 10px;
 
                 .icon-button {
                     border: none;
                     font-size: 1.2em;
-                    margin: 0 5px;
                     background: none;
                     cursor: pointer;
-                    margin: 0 5px;
                     transition: color 0.3s;
+                    padding: 16px 20px;
                 }
 
                 .del-button {
@@ -80,11 +112,6 @@
 
                     &:hover {
                         color: darkred;
-                    }
-
-                    .management-icon {
-                        height: 1.25em;
-                        width: 1.25em;
                     }
                 }
 
@@ -94,28 +121,69 @@
                     &:hover {
                         color: #b7881b;
                     }
+                }
 
-                    .management-icon {
-                        height: 1.25em;
-                        width: 1.25em;
-                    }
+                .management-icon {
+                    height: 1.25em;
+                    width: 1.25em;
+                }
+
+                .status-switch {
+                    padding: 0;
                 }
             }
         }
     }
 
+    .pagination {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 20px;
+
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #1DC483;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+
+            &:hover {
+                background-color: #17a669;
+            }
+
+            &:disabled {
+                background-color: #ccc;
+                cursor: not-allowed;
+            }
+        }
+
+        span {
+            font-size: 16px;
+        }
+    }
+
     .update-frame {
         position: fixed;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
         display: flex;
         align-items: center;
-        background: #77777777;
-        padding: 20px;
-        z-index: 2;
-        width: 100vw;
-        height: 100vh;
-        border-radius: 8px;
+        justify-content: center;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 1000;
+
+        .update-content {
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            max-width: 80%;
+            max-height: 80%;
+            overflow-y: auto;
+        }
     }
 }

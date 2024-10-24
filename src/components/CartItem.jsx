@@ -1,49 +1,59 @@
-import React, { useEffect, useState } from 'react'
-import '../css/Cart.scss'
+import React, { useState, useEffect } from 'react';
+import '../css/Cart.scss';
+import { message } from 'antd';
 
-const CartItem = ({ props, onClick, onChange }) => {
-    const [quantity, setQuantity] = useState(props.quantity)
-    const handleClick = () => {
-        onClick(props.itemName)
-    }
-    const handleChange = (e) => {
-        setQuantity(parseInt(e.target.value))
-    }
+const CartItem = ({ item, onDelete, onQuantityChange }) => {
+    if (!item) return null; // Add this check to prevent errors when item is undefined
+
+    console.log(item);
+    const [quantity, setQuantity] = useState(item.quantity);
+    const [totalPrice, setTotalPrice] = useState(item.price);
+
     useEffect(() => {
-        onChange(props.itemName, quantity)
-    }, [quantity])
-    const formattedNumber = (num) => {
-        return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-    }
+        setTotalPrice(item.discountedPrice * quantity);
+    }, [quantity, item.discountedPrice]);
+
+    const handleQuantityChange = (e) => {
+        const newQuantity = parseInt(e.target.value);
+        if (newQuantity <= item.availableQuantity) {
+            setQuantity(newQuantity);
+            onQuantityChange(newQuantity);
+        } else {
+            message.warning(`Chỉ còn ${item.availableQuantity} sản phẩm có sẵn.`);
+        }
+    };
+
+    const formatPrice = (price) => {
+        return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(price);
+    };
+
     return (
         <div className="cart-item-info">
             <div className="img">
-                <img src={props.image} alt="what" />
+                <img src={item.image} alt={item.itemName} className="cart-item-image" />
             </div>
-            <div className="cart-item-name">
-                <h4>
-                    {props.itemName}
-                </h4>
+            <div className="cart-item-details">
+                <h4>{item.itemName}</h4>
             </div>
-            <div className="cart-item-name">
-                <h4>
-                    {formattedNumber(props.originalPrice)}₫
-                </h4>
+            <div className="cart-item-details">
+                <p>Giá: {formatPrice(item.discountedPrice)}</p>
             </div>
             <div className="cart-item-quantity">
-                <input type="number" value={quantity} onChange={handleChange} min={1} />
+                <input
+                    type="number"
+                    value={quantity}
+                    onChange={handleQuantityChange}
+                    min="1"
+                />
             </div>
-            <div className="cart-item-name">
-                <h4>
-                    {formattedNumber(props.originalPrice * quantity)}₫
-                </h4>
+            <div className="cart-item-details">
+                <p>Tổng: {formatPrice(totalPrice)}</p>
             </div>
             <div className="cart-item-btn">
-                <button onClick={handleClick}>XÓA</button>
+                <button onClick={() => onDelete(item.itemName)}>Xóa</button>
             </div>
-
         </div>
-    )
-}
+    );
+};
 
-export default CartItem
+export default CartItem;

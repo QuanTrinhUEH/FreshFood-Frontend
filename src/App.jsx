@@ -1,8 +1,8 @@
-import { useEffect, useState } from 'react'
+import React, { useState, useEffect } from 'react'
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom'
 import './App.css'
 import Header from './components/Header.jsx'
 import HeaderAlt from './components/HeaderAlt.jsx'
-import { Routes, Route, useNavigate, useLocation } from 'react-router-dom'
 import Home from './pages/Home.jsx'
 import Footer from './components/Footer.jsx'
 import Contact from './pages/Contact.jsx'
@@ -11,68 +11,98 @@ import Item from './pages/Item.jsx'
 import NotFound from './pages/NotFound.jsx'
 import Search from './pages/Search.jsx'
 import About from './pages/About.jsx'
-import SignUp from './pages/SignUp.jsx'
-import SignIn from './pages/SignIn.jsx'
+import Register from './pages/Register.jsx'
+import Login from './pages/Login.jsx'
 import Cart from './pages/Cart.jsx'
 import Account from './pages/Account.jsx'
 import { refreshTokenResetter } from '../fetchApi.js'
 import ProductPage from './pages/ProductPage.jsx'
-import Checkout from './pages/Checkout.jsx'
+import Order from './pages/Order.jsx'
+import UserOrders from './pages/UserOrders';
 
 function App() {
+  const [user, setUser] = useState(null);
+  const [token, setToken] = useState(null);
+  const [refreshToken, setRefreshToken] = useState(null);
 
-  const navigate = useNavigate();
-  const location = useLocation();
+  useEffect(() => {
+    const storedUser = localStorage.getItem('userInfo');
+    const storedToken = localStorage.getItem('tokenInfo');
+    const storedRefreshToken = localStorage.getItem('refreshTokenInfo');
+    if (storedUser) setUser(JSON.parse(storedUser));
+    if (storedToken) setToken(storedToken);
+    if (storedRefreshToken) setRefreshToken(storedRefreshToken);
+  }, []);
 
-  const cycleTokenAuth = async () => {
-    try {
-      const data = await refreshTokenResetter('/token/request', 'POST', localStorage.getItem('refreshToken'))
-      if (data.status == 200) {
-        localStorage.setItem('user', JSON.stringify(data.data.user))
-        localStorage.setItem('token', data.data.token)
-        localStorage.setItem('refreshToken', data.data.refreshToken)
-      } else {
-        localStorage.removeItem('user')
-        localStorage.removeItem('token')
-        localStorage.removeItem('refreshToken')
-        localStorage.removeItem('cart')
-        navigate(0)
-      }
-    } catch (e) {
-      console.log('failed')
-    }
-  }
+  // const cycleTokenAuth = async () => {
+  //   try {
+  //     const data = await refreshTokenResetter('/token/request', 'POST', refreshToken);
+  //     if (data.status == 200) {
+  //       setUser(data.data.user);
+  //       setToken(data.data.token);
+  //       setRefreshToken(data.data.refreshToken);
+  //       localStorage.setItem('userInfo', JSON.stringify(data.data.user));
+  //       localStorage.setItem('tokenInfo', data.data.token);
+  //       localStorage.setItem('refreshTokenInfo', data.data.refreshToken);
+  //     } else {
+  //       clearAuth();
+  //       navigate(0);
+  //     }
+  //   } catch (e) {
+  //     console.log('Token refresh failed');
+  //   }
+  // };
 
-  if (localStorage.getItem('refreshToken') == null) {
-    localStorage.removeItem('cart')
-    localStorage.removeItem('token')
-    localStorage.removeItem('user')
-  } else {
-    setTimeout(() => {
-      cycleTokenAuth();
-    }, 500);
-    setInterval(() => {
-      cycleTokenAuth()
-    }, 5 * 10000 - 100);
-  }
+  // const clearAuth = () => {
+  //   setUser(null);
+  //   setToken(null);
+  //   setRefreshToken(null);
+  //   localStorage.removeItem('userInfo');
+  //   localStorage.removeItem('tokenInfo');
+  //   localStorage.removeItem('refreshTokenInfo');
+  //   localStorage.removeItem('cartInfo');
+  // };
 
+  // useEffect(() => {
+  //   if (!refreshToken) {
+  //     clearAuth();
+  //   } else {
+  //     // Initial refresh after 500ms
+  //     const initialRefresh = setTimeout(() => {
+  //       cycleTokenAuth();
+  //     }, 500);
+
+  //     // Set up interval to refresh before 1 minute every 10 minutes
+  //     const intervalId = setInterval(() => {
+  //       cycleTokenAuth();
+  //     }, 10 * 60 * 1000);
+
+  //     return () => {
+  //       clearTimeout(initialRefresh);
+  //       clearInterval(intervalId);
+  //     };
+  //   }
+  // }, [refreshToken]);
+
+  
   return (
     <>
-      {(location.pathname === '/signin' || location.pathname === '/signup') ? <HeaderAlt /> : (location.pathname === '/checkout') ? <></> : <Header />}
+      {(location.pathname === '/login' || location.pathname === '/register') ? <HeaderAlt /> : (location.pathname === '/checkout') ? <></> : <Header />}
       <Routes>
-        <Route path='/signup' element={<SignUp />}></Route>
-        <Route path='/signin' element={<SignIn />}></Route>
-        <Route path='/' element={<Home />}></Route>
-        <Route path='/contact' element={<Contact />}></Route>
-        <Route path='/admin/*' element={<Admin />}></Route>
-        <Route path='/account/*' element={<Account />}></Route>
-        <Route path='/product/:id' element={<Item />}></Route>
+        <Route path='/login' element={<Login />} />
+        <Route path='/register' element={<Register />} />
+        <Route path='/' element={<Home />} />
+        <Route path='/contact' element={<Contact />} />
+        <Route path='/admin/*' element={<Admin />} />
+        <Route path='/account/*' element={<Account />} />
+        <Route path='/product/:id' element={<Item />} />
         <Route path="/product/productsCategory/:category" element={<ProductPage />} />
-        <Route path='/search' element={<Search />}></Route>
-        <Route path='/cart' element={<Cart />}></Route>
-        <Route path='/about' element={<About />}></Route>
-        <Route path='*' element={<NotFound />}></Route>
-        <Route path='/checkout' element={<Checkout />}></Route>
+        <Route path='/search' element={<Search />} />
+        <Route path='/cart' element={<Cart />} />
+        <Route path='/about' element={<About />} />
+        <Route path='/order' element={<Order />} />
+        <Route path="/myOrders" element={<UserOrders />} />
+        <Route path='*' element={<NotFound />} />
       </Routes>
       {(location.pathname === '/checkout') ? <></> : <Footer/>}
     </>

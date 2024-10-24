@@ -19,8 +19,8 @@
             border-radius: 10px;
             border: 2px solid #13D360;
 
-            .sign-in-nav,
-            .sign-up-nav {
+            .login-nav,
+            .register-nav {
                 width: 50%;
                 text-align: center;
                 height: 4rem;
@@ -41,14 +41,14 @@
                 }
             }
 
-            .sign-in-nav {
+            .login-nav {
                 .active {
                     border-bottom-left-radius: 7px;
                     border-top-left-radius: 7px;
                 }
             }
 
-            .sign-up-nav {
+            .register-nav {
                 .active {
                     border-bottom-right-radius: 7px;
                     border-top-right-radius: 7px;
@@ -95,7 +95,7 @@
                 }
 
                 input[type="text"],
-                input[type="email"],
+                input[type="tel"],
                 input[type="password"],
                 input[type="file"] {
                     width: 100%;

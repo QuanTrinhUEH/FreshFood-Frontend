@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { PiSignInBold, PiMagnifyingGlassBold } from "react-icons/pi";
 import { FaUserAlt, FaFacebookMessenger } from "react-icons/fa";
@@ -7,13 +7,39 @@ import '../css/Header.scss'
 
 const Header = () => {
   const navigate = useNavigate();
-  const [user, setUser] = useState(JSON.parse(localStorage.getItem('user')))
+  const [user, setUser] = useState(null);
+  const [cart, setCart] = useState([]);
   const [searchInput, setSearchInput] = useState('');
-  const [verify, setVerify] = useState(false)
+  const [verify, setVerify] = useState(false);
+
+  useEffect(() => {
+    const storedUser = localStorage.getItem('userInfo');
+    const storedCart = localStorage.getItem('cartInfo');
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
+    }
+    if (storedCart) {
+      setCart(JSON.parse(storedCart));
+    }
+
+    // Thêm event listener để lắng nghe sự thay đổi của giỏ hàng
+    const handleCartUpdate = () => {
+      const updatedCart = JSON.parse(localStorage.getItem('cartInfo')) || [];
+      setCart(updatedCart);
+    };
+
+    window.addEventListener('cartUpdated', handleCartUpdate);
+
+    // Cleanup function
+    return () => {
+      window.removeEventListener('cartUpdated', handleCartUpdate);
+    };
+  }, []);
+
   const searchInputChange = (e) => {
     setSearchInput(e.target.value)
   }
-  // TODO: INPUT KHÔNG ĐƯỢC TRỐNG
+
   const handleSubmit = (e) => {
     e.preventDefault();
     if (searchInput === '') {
@@ -24,29 +50,29 @@ const Header = () => {
       navigate(`/search?q=${searchInput}`)
     }
   }
-  const handleSignOut = () => {
-    localStorage.removeItem('user')
-    localStorage.removeItem('token')
-    localStorage.removeItem('refreshToken')
-    localStorage.removeItem('cart')
-    setUser(null)
-    navigate(0)
+  const handleLogOut = () => {
+    localStorage.removeItem('userInfo');
+    localStorage.removeItem('cartInfo');
+    setUser(null);
+    setCart([]);
+    navigate('/');
   }
+
   return (
     <div className='header'>
       <div className="header-top">
         <div className="container">
           {
-            user == null ?
+            !user ?
               <div className="header-top-left">
-                <Link to={'/signin'}>
-                  <div className="header-top-left-signin">
+                <Link to={'/login'}>
+                  <div className="header-top-left-login">
                     <PiSignInBold />
                     <p>Đăng nhập</p>
                   </div>
                 </Link>
-                <Link to={'/signup'}>
-                  <div className="header-top-left-signup">
+                <Link to={'/register'}>
+                  <div className="header-top-left-register">
                     <FaUserAlt />
                     <p>Đăng ký</p>
                   </div>
@@ -55,27 +81,28 @@ const Header = () => {
               <div className="header-top-left">
                 <div className="header-top-left-profile">
                   <div className="header-top-dropdown">
-                    <Link className="dropbtn">
+                    <Link to className="dropbtn">
                       Tài khoản <IoIosArrowDown className="nav-arrow" />
                     </Link>
                     <div className="dropdown-content">
                       <div className="nav-profile">
-                        <img src={user.profile_picture} alt="" className="profile-img" />
-                        <p className="profile-name">{user.username}</p>
+                        <img src={user.profileImage} alt="" className="profile-img" />
+                        <p className="profile-name">{user.userName}</p>
                       </div>
-                      <Link className='nav-dropdown ' to={'/account'}>Tài khoản</Link>
-                      {user.role == 'admin' ? <Link className='nav-dropdown ' to={'/admin'}>Quản lý</Link> : <Link className='nav-dropdown ' to={'/cart'}>Giỏ hàng</Link>}
-                      <button className='nav-dropdown sigh-out' onClick={handleSignOut}>Đăng xuất</button>
+                      {user.role === 'user' && <Link className='nav-dropdown ' to={'/account'}>Tài khoản</Link>}
+                      {user.role === 'user' && <Link className='nav-dropdown ' to={'/myOrders'}>Đơn hàng</Link>}
+                      {user.role === 'admin' ? <Link className='nav-dropdown ' to={'/admin'}>Quản lý</Link> : <></>}
+                      <button className='nav-dropdown log-out' onClick={handleLogOut}>Đăng xuất</button>
                     </div>
                   </div>
                 </div>
-                <Link to={'/cart'}>
-                  <div className="header-top-left-cart">
-                    <IoMdCart />
-                    <p>Giỏ hàng</p>
-                    <p>{localStorage.getItem('cart') ? JSON.parse(localStorage.getItem('cart')).map(e => e.quantity).reduce((a, c) => a + c, 0) : 0}</p>
-                  </div>
-                </Link>
+                {user.role === 'user' &&
+                  <Link to={'/cart'}>
+                    <div className="header-top-left-cart">
+                      <IoMdCart />
+                      <p>Giỏ hàng</p>
+                    </div>
+                  </Link>}
               </div>
           }
           <div className="header-top-right">

@@ -1,8 +1,9 @@
 import React from 'react'
 import { IoMdCart } from 'react-icons/io'
+import { FaStar } from 'react-icons/fa'
 import { Link } from 'react-router-dom'
 
-const ItemTop = ({ props }) => {
+const ItemPromotion = ({ props }) => {
     const formattedNumber = (num) => {
         return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
     }
@@ -13,7 +14,13 @@ const ItemTop = ({ props }) => {
 
     return (
         <>
-            <Link to={`/product/${props._id}`} className='link-product-cart' >
+            <Link to={`/product/${props._id}`} className='link-product-cart-2' >
+                {props.promotion && (
+                    <div className="discount">
+                        <p>-${props.promotion.discountPercentage}%</p>
+                        <FaStar />
+                    </div>
+                )}
                 <img src={props.images[0]} alt="" />
                 <div className="description">
                     <p className='name'>{props.itemName}</p>
@@ -33,4 +40,4 @@ const ItemTop = ({ props }) => {
     )
 }
 
-export default ItemTop
+export default ItemPromotion

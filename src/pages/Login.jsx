@@ -4,15 +4,15 @@ import NavForm from '../components/NavForm'
 import { useNavigate } from 'react-router-dom';
 import { fetchAPI } from '../../fetchApi';
 
-const SignIn = () => {
-    const [email, setEmail] = useState('');
+const Login = () => {
+    const [phoneNumber, setPhoneNumber] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
 
     useEffect(() => {
-        if (localStorage.getItem('user') !== null) {
+        if (localStorage.getItem('userInfo') !== null) {
             navigate('/')
         }
     }, [])
@@ -23,20 +23,20 @@ const SignIn = () => {
         setError('');
 
         try {
-            console.log(email, password)
+            console.log(phoneNumber, password)
             const response = await fetchAPI('/user/login', 'POST', {
-                email,
+                phoneNumber,
                 password
             })
 
             if (response.status === 200) {
                 console.log("res", response)
-                localStorage.setItem('user', JSON.stringify(response.data.user))
-                localStorage.setItem('token', response.data.token)
-                localStorage.setItem('refreshToken', response.data.refreshToken)
+                localStorage.setItem('userInfo', JSON.stringify(response.data.user))
+                localStorage.setItem('tokenInfo', response.data.token)
+                localStorage.setItem('refreshTokenInfo', response.data.refreshToken)
                 localStorage.removeItem('cart');
                 setLoading(false)
-                navigate(0)
+                navigate('/')
             }
             else if (response.status === 403) {
                 setError('Sai tài khoản hoặc mật khẩu')
@@ -62,12 +62,12 @@ const SignIn = () => {
                     <h2>Đăng nhập</h2>
                     <form onSubmit={handleLogin}>
                         <div className="input-group">
-                            <label htmlFor="email">Email</label>
+                            <label htmlFor="phoneNumber">Số điện thoại</label>
                             <input
-                                type="email"
-                                id="email"
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
+                                type="tel"
+                                id="phoneNumber"
+                                value={phoneNumber}
+                                onChange={(e) => setPhoneNumber(e.target.value)}
                                 required
                             />
                         </div>
@@ -92,4 +92,4 @@ const SignIn = () => {
     )
 }
 
-export default SignIn
+export default Login

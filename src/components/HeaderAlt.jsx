@@ -4,7 +4,6 @@ import { IoIosArrowDown} from "react-icons/io";
 import '../css/Header.scss'
 
 function HeaderAlt() {
-    const navigate = useNavigate();
     return (
         <div className='header'>
             <div className="header-middle">

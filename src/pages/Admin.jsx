@@ -5,7 +5,9 @@ import { Route, Routes, Navigate } from 'react-router-dom';
 import Create from './Create.jsx';
 import Management from './Management.jsx';
 import CustomerFeedback from './CustomerFeedback.jsx';
-
+import PromotionManagement from './PromotionManagement.jsx';
+import CreatePromotion from './CreatePromotion.jsx';
+import OrderManagenent from './OrderManagenent.jsx';
 function Admin() {
     return (
         <div className='admin-container'>
@@ -14,10 +16,14 @@ function Admin() {
             </div>
             <div className='admin-content'>
                 <Routes>
-                    <Route path='/' element={<Navigate to="/admin/create" />} />
-                    <Route path='/create' element={<Create />}></Route>
+                    <Route path='/' element={<Navigate to="/admin/createItem" />} />
+                    <Route path='/createItem' element={<Create />}></Route>
+                    <Route path='/createPromotion' element={<CreatePromotion />}/>
                     <Route path='/management' element={<Management />}></Route>
-                    <Route path='/feedback' element={<CustomerFeedback />}></Route>
+                    <Route path="/promotions" element={<PromotionManagement />} />
+                    <Route path="/orderManagement" element={<OrderManagement />} />
+                    <Route path="/orderManagenent" element={<OrderManagenent />} />
+                    <Route path='/feedback' element={<CustomerFeedback />}/>
                 </Routes>
             </div>
         </div>
