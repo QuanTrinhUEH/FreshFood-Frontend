@@ -3,6 +3,7 @@ import '../css/Cart.scss';
 import { message } from 'antd';
 
 const CartItem = ({ item, onDelete, onQuantityChange }) => {
+    console.log(item)
     if (!item) return null;
     const [quantity, setQuantity] = useState(item.quantity);
     const [totalPrice, setTotalPrice] = useState(item.price);
@@ -17,7 +18,7 @@ const CartItem = ({ item, onDelete, onQuantityChange }) => {
             setQuantity(newQuantity);
             onQuantityChange(newQuantity);
         } else {
-            message.warning(`Chỉ còn ${item.availableQuantity} sản phẩm có sẵn.`);
+            message.warning(`Vượt quá số lượng sản phẩm có sẵn.`);
         }
     };
 

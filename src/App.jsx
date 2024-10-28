@@ -19,6 +19,7 @@ import { refreshTokenResetter } from '../fetchApi.js'
 import ProductPage from './pages/ProductPage.jsx'
 import Order from './pages/Order.jsx'
 import UserOrders from './pages/UserOrders';
+import OrderManagement from './pages/OrderManagement.jsx'
 
 function App() {
   const [user, setUser] = useState(null);
@@ -84,7 +85,7 @@ function App() {
   //   }
   // }, [refreshToken]);
 
-  
+
   return (
     <>
       {(location.pathname === '/login' || location.pathname === '/register') ? <HeaderAlt /> : (location.pathname === '/checkout') ? <></> : <Header />}
@@ -100,11 +101,12 @@ function App() {
         <Route path='/search' element={<Search />} />
         <Route path='/cart' element={<Cart />} />
         <Route path='/about' element={<About />} />
+        <Route path='/orderManagement' element={<OrderManagement />} />
         <Route path='/order' element={<Order />} />
         <Route path="/myOrders" element={<UserOrders />} />
         <Route path='*' element={<NotFound />} />
       </Routes>
-      {(location.pathname === '/checkout') ? <></> : <Footer/>}
+      {(location.pathname === '/checkout') ? <></> : <Footer />}
     </>
   )
 }

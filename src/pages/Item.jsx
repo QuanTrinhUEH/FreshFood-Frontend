@@ -13,7 +13,6 @@ const Item = () => {
   const params = new useParams();
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true)
   const [data, setData] = useState();
   const [ads, setAds] = useState([]);
   const [quantity, setQuantity] = useState(1);
@@ -43,7 +42,7 @@ const Item = () => {
           setData(response.data.item);
           setAvailableQuantity(response.data.item.quantity);
           const adsResponse = await fetchAPI(`/item/foodType/${response.data.item.foodType}`);
-          setAds(adsResponse.data.items.slice(0, 4));
+          setAds(adsResponse.data.items);
           setApiStatus('success');
         } else {
           setApiStatus('error');
@@ -103,6 +102,7 @@ const Item = () => {
       discountedPrice: data.promotion ? discountedPrice : data.price,
       variants: data.variants,
       image: data.images[0],
+      availableQuantity,
       quantity,
       price: (data.promotion ? discountedPrice : data.price) * quantity,
       type: data.foodType,
@@ -140,7 +140,7 @@ const Item = () => {
   };
 
   if (apiStatus === 'loading') {
-    return <PuffLoader className='loader' color="#1dc483" />;
+    return <PuffLoader className='load' color="#1dc483" />;
   } else if (apiStatus === 'error') {
     return <Navigate to="/not-found" />;
   } else if (apiStatus === 'success') {
@@ -219,17 +219,13 @@ const Item = () => {
                     <h3 className='type-title'>Phân loại</h3>
                     <p className='type-text'>{getFoodTypeInVietnamese(data.foodType)}</p>
                   </div>
-                  <div className="stock">
-                    <h3 >Tồn kho</h3>
-                    <p className='type-text stock-text'>{availableQuantity}</p>
-                  </div>
                 </div>
               </form>
             </div>
           </div>
         </div>
         <div className="bottom-item">
-          <div className="container">
+          <div className="description">
             <div className="bottom-left">
               <h3>LỢI ÍCH CỦA THỰC PHẨM</h3>
               <div className="st-border"></div>
@@ -251,28 +247,28 @@ const Item = () => {
                   <h4>CHÍNH SÁCH MUA HÀNG</h4>
                 </Link>
               </div>
-              <div className="recommendations">
-                <h4 className='highlighted'>SẢN PHẨM LIÊN QUAN</h4>
-                <ul>
-                  {ads.length > 0 ? (
-                    ads.map((item, i) => (
-                      <li key={i}>
-                        <Link
-                          to={`/product/${item._id}`}
-                          onClick={(e) => {
-                            e.preventDefault(); // Ngăn chặn hành vi mặc định của Link
-                            handleRecommendationClick(item._id);
-                          }}
-                        >
-                          <RecommendItem props={item} />
-                        </Link>
-                      </li>
-                    ))
-                  ) : (
-                    <p>Không có sản phẩm liên quan</p>
-                  )}
-                </ul>
-              </div>
+            </div>
+          </div>
+          <div className="recommendations">
+            <h3 className='highlighted'>SẢN PHẨM LIÊN QUAN</h3>
+            <div className='recommend-body'>
+              {ads.length > 0 ? (
+                ads.map((item, i) => (
+                  // <div className='recommend-content' key={i}>
+                    <Link className='recommend-content' key={i}
+                      to={`/product/${item._id}`}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        handleRecommendationClick(item._id);
+                      }}
+                    >
+                      <RecommendItem props={item} />
+                    </Link>
+                  // </div>
+                ))
+              ) : (
+                <p>Không có sản phẩm liên quan</p>
+              )}
             </div>
           </div>
         </div>

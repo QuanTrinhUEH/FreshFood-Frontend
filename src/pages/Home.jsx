@@ -15,7 +15,6 @@ import { FaCartPlus, FaGift, FaLongArrowAltLeft, FaLongArrowAltRight, FaPhoneSqu
 import ItemTop from '../components/ItemTop';
 import ItemMiddle from '../components/ItemMiddle';
 import { FaBasketShopping } from 'react-icons/fa6';
-import ItemBottom from '../components/ItemBottom';
 import Rating from '../components/Rating';
 import { fetchAPI } from '../../fetchApi';
 import { PuffLoader } from 'react-spinners';
@@ -24,7 +23,6 @@ import ItemPromotion from '../components/ItemPromotion';
 const Home = () => {
   const swiperRef1 = useRef(null)
   const swiperRef2 = useRef(null)
-  const swiperRef3 = useRef(null)
   const swiperRef4 = useRef(null)
 
   const [items, setItems] = useState([]);
