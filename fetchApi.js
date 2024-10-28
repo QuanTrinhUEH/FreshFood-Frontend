@@ -1,4 +1,5 @@
 const API_URL = 'https://freshfood-backend-tdz9.onrender.com'
+// const API_URL = 'http://localhost:8080'
 export const fetchAPI = async (endpoint, method, bodyData, token) => {
     const response = await fetch(API_URL + endpoint, {
         method,

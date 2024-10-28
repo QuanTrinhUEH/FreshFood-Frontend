@@ -8,6 +8,7 @@ const { Option } = Select;
 const { TextArea } = Input;
 
 const Create = () => {
+  const [form] = Form.useForm();
   const [productName, setProductName] = useState('');
   const [productPrice, setProductPrice] = useState(0);
   const [variants, setVariants] = useState('');
@@ -131,8 +132,9 @@ const Create = () => {
   return (
     <div className="create-container content-container">
       <h1>Thêm sản phẩm</h1>
-      <Form className="create-content">
-        <Form.Item className="product-info">
+      <Form form={form} onFinish={handleSubmit} className="create-content">
+        <Form.Item className="product-info"
+          rules={[{ required: true, message: 'Vui lòng nhập tên sản phẩm' }]}>
           <label htmlFor="product-name">Tên sản phẩm</label>
           <Input
             value={productName}
@@ -142,7 +144,8 @@ const Create = () => {
           />
         </Form.Item>
 
-        <Form.Item className="product-info">
+        <Form.Item className="product-info"
+          rules={[{ required: true, message: 'Vui lòng nhập giá sản phẩm' }]}>
           <label htmlFor="price">Giá bán</label>
           <Input
             type="number"
@@ -154,7 +157,8 @@ const Create = () => {
           />
         </Form.Item>
 
-        <Form.Item className="product-info">
+        <Form.Item className="product-info"
+          rules={[{ required: true, message: 'Vui lòng nhập phân loại' }]}>
           <label htmlFor="variants">Phân loại</label>
           <Input
             value={variants}
@@ -207,7 +211,8 @@ const Create = () => {
           </div>
         </Form.Item>
 
-        <Form.Item className="product-info">
+        <Form.Item className="product-info"
+          rules={[{ required: true, message: 'Vui lòng nhập mô tả sản phẩm' }]}>
           <label>Mô tả sản phẩm</label>
           <TextArea
             rows={4}
@@ -230,7 +235,7 @@ const Create = () => {
         </Form.Item>
 
         <Form.Item className="create-submit">
-          <Button type="primary" htmlType="submit" onClick={handleSubmit} className="submit-create" loading={loading}>
+          <Button type="primary" htmlType="submit" className="submit-create" loading={loading}>
             Tạo sản phẩm
           </Button>
         </Form.Item>

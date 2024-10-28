@@ -3,10 +3,12 @@ import { fetchAPIWithoutBody, fetchAPI } from '../../fetchApi';
 import dayjs from 'dayjs';
 import "../css/UserOrders.scss";
 import Swal from 'sweetalert2';
+import OrderDetails from '../components/OrderDetail';
 
 const UserOrders = () => {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [selectedOrder, setSelectedOrder] = useState(null);
 
   useEffect(() => {
     fetchUserOrders();
@@ -24,46 +26,6 @@ const UserOrders = () => {
       console.error('Error fetching user orders:', error);
     } finally {
       setLoading(false);
-    }
-  };
-
-  const handleCancelOrder = async (orderId) => {
-    try {
-      const result = await Swal.fire({
-        title: 'Bạn có chắc chắn muốn hủy đơn hàng này?',
-        text: "Bạn không thể hoàn tác hành động này!",
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#3085d6',
-        cancelButtonColor: '#d33',
-        confirmButtonText: 'Đồng ý',
-        cancelButtonText: 'Hủy bỏ'
-      });
-
-      if (result.isConfirmed) {
-        const response = await fetchAPI(`/order/cancel/${orderId}`, 'PATCH', {}, localStorage.getItem('tokenInfo'));
-        if (response.status === 200) {
-          Swal.fire(
-            'Đã hủy!',
-            'Đơn hàng của bạn đã được hủy.',
-            'success'
-          );
-          fetchUserOrders(); // Refresh the orders list
-        } else {
-          Swal.fire(
-            'Lỗi!',
-            'Không thể hủy đơn hàng. Vui lòng thử lại sau.',
-            'error'
-          );
-        }
-      }
-    } catch (error) {
-      console.error('Error cancelling order:', error);
-      Swal.fire(
-        'Lỗi!',
-        'Đã xảy ra lỗi khi hủy đơn hàng.',
-        'error'
-      );
     }
   };
 
@@ -89,6 +51,14 @@ const UserOrders = () => {
     }
   };
 
+  const handleOrderClick = (order) => {
+    setSelectedOrder(order);
+  };
+
+  const handleCloseDetails = () => {
+    setSelectedOrder(null);
+  };
+
   if (loading) {
     return <div className="loading">Đang tải...</div>;
   }
@@ -99,40 +69,24 @@ const UserOrders = () => {
       {orders.length > 0 ? (
         <div className="orders-list">
           {orders.map((order) => (
-            <div key={order._id} className="order-item">
+            <div key={order._id} className="order-item" onClick={() => handleOrderClick(order)}>
               <div className="order-header">
                 <span className="order-id">Mã đơn hàng: {order._id}</span>
                 <span className={`order-status ${getStatusClass(order.status)}`}>
                   {getStatusText(order.status)}
                 </span>
               </div>
-              <div className="order-details">
-                <p>Ngày đặt hàng: {dayjs(order.orderDate).format('DD/MM/YYYY HH:mm:ss')}</p>
+              <div className="order-summary">
+                <p>Ngày đặt hàng: {dayjs(order.orderDate).format('DD/MM/YYYY')}</p>
                 <p>Tổng tiền: {order.totalAmount}đ</p>
-                <p>Địa chỉ: {order.address}</p>
-                <p>Số điện thoại: {order.phoneNumber}</p>
               </div>
-              <div className="order-items">
-                <h3>Sản phẩm:</h3>
-                <ul>
-                  {Array.isArray(order.items) && order.items.map((item) => (
-                    <li key={item._id || item.id}>
-                      {item.itemName || 'Sản phẩm không xác định'} - Số lượng: {item.quantity} - Giá: {item.price || 'N/A'}đ
-                    </li>
-                  ))}
-                </ul>
-              </div>
-              {order.status === 'pending' && (
-                <button className="cancel-order-btn" onClick={() => handleCancelOrder(order._id)}>
-                  Hủy đơn hàng
-                </button>
-              )}
             </div>
           ))}
         </div>
       ) : (
         <p className="no-orders">Bạn chưa có đơn hàng nào.</p>
       )}
+      {selectedOrder && <OrderDetails order={selectedOrder} onClose={handleCloseDetails} fetchUserOrders={fetchUserOrders} />}
     </div>
   );
 };
